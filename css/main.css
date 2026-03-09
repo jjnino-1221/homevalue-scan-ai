@@ -1,0 +1,161 @@
+/*
+ * Global Reset and Base Styles
+ * Sets consistent defaults across all browsers
+ */
+
+/* Reset default margins and paddings */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure full height for layout */
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+/*
+ * Design System - CSS Custom Properties
+ * Central source of truth for all design tokens
+ */
+
+:root {
+  /* ===== COLORS ===== */
+
+  /* Primary - Rocket Red */
+  --rocket-red: #D2222D;
+  --rocket-red-dark: #A51C25;
+  --rocket-red-light: #FF5A5F;
+
+  /* Neutrals */
+  --text-primary: #1A1A1A;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --background: #FFFFFF;
+  --background-gray: #F5F5F5;
+  --border-gray: #E0E0E0;
+
+  /* Status Colors */
+  --success-green: #00A86B;
+  --warning-yellow: #FFA500;
+  --error-red: #DC3545;
+
+  /* Overlay */
+  --overlay-dark: rgba(0, 0, 0, 0.5);
+
+  /* ===== TYPOGRAPHY ===== */
+
+  /* Font Family */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                 'Helvetica Neue', Arial, sans-serif;
+
+  /* Font Sizes (mobile-first) */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 18px;   /* Larger for accessibility */
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --text-3xl: 48px;
+
+  /* Font Weights */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ===== SPACING ===== */
+
+  /* 8px base unit system */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-8: 64px;
+
+  /* ===== LAYOUT ===== */
+
+  /* Max widths */
+  --max-width-content: 600px;
+  --max-width-wide: 1200px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  /* Transitions */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/*
+ * Base Typography
+ * Default text styles applied to all elements
+ */
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  background-color: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  line-height: var(--line-height-tight);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+h1 {
+  font-size: var(--text-3xl);
+}
+
+h2 {
+  font-size: var(--text-2xl);
+}
+
+h3 {
+  font-size: var(--text-xl);
+}
+
+/* Paragraph spacing */
+p {
+  margin-bottom: var(--space-2);
+}
+
+/* Link styles */
+a {
+  color: var(--rocket-red);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--rocket-red-dark);
+}
+
+/* Strong emphasis */
+strong {
+  font-weight: var(--weight-bold);
+}

@@ -1,0 +1,13 @@
+# Netlify Configuration
+# Deployment settings for mobile-valuation app
+
+[build]
+  # No build command needed (static HTML)
+  command = "echo 'No build required'"
+  publish = "."
+
+[[redirects]]
+  # Redirect 404s to index.html (for future SPA routing)
+  from = "/*"
+  to = "/index.html"
+  status = 200

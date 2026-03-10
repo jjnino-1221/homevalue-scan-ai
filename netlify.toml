@@ -6,8 +6,8 @@
   command = "echo 'No build required'"
   publish = "."
 
-[[redirects]]
-  # Redirect 404s to index.html (for future SPA routing)
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Redirects for SPA routing (not needed for Phase 1)
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200

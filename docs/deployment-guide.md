@@ -22,7 +22,7 @@ You need to set up GitHub authentication to push code:
 git config --global credential.helper wincred
 
 # Push to GitHub (will prompt for token)
-git push origin main
+git push origin master
 # Username: jjnino1221
 # Password: [paste your token here]
 ```
@@ -42,7 +42,7 @@ git push origin main
 
 **4. Configure build settings**
 
-- Branch to deploy: `main`
+- Branch to deploy: `master`
 - Build command: (leave empty)
 - Publish directory: `.` (root)
 - Click "Deploy site"
@@ -67,7 +67,7 @@ Every time you push to GitHub, Netlify automatically rebuilds:
 # Make changes
 git add .
 git commit -m "feat: add new feature"
-git push origin main
+git push origin master
 
 # Netlify detects push and rebuilds (takes ~30 seconds)
 ```

@@ -73,3 +73,55 @@
 - Combine classes for maximum flexibility
 - Test on real devices early
 - Accessibility matters (focus states, sizes)
+
+## Session 3: JavaScript Basics
+
+**Date:** 2026-03-10
+
+### What I Learned
+
+**Functions:**
+- Define reusable code: `function name(params) { ... }`
+- Call functions: `name(arguments)`
+- Parameters are inputs, return values are outputs
+- Functions make code DRY (Don't Repeat Yourself)
+
+**DOM Manipulation:**
+- `document` represents the webpage
+- `querySelector(selector)` finds one element
+- `querySelectorAll(selector)` finds all matching elements
+- CSS selectors work: `.class`, `#id`, `element`
+
+**Event Listeners:**
+- `element.addEventListener('event', handler)` attaches behavior
+- Common events: `click`, `DOMContentLoaded`, `submit`
+- Handler is a function that runs when event occurs
+
+**localStorage:**
+- Browser storage that persists between page loads
+- `localStorage.setItem(key, value)` saves data
+- `localStorage.getItem(key)` retrieves data
+- Only stores strings, use JSON.stringify/parse for objects
+
+**JSON:**
+- JavaScript Object Notation (data format)
+- `JSON.stringify(obj)` converts object → string
+- `JSON.parse(str)` converts string → object
+- Allows storing complex data in localStorage
+
+**Console Logging:**
+- `console.log('message')` prints to DevTools console
+- F12 opens DevTools in most browsers
+- Essential for debugging: see what's happening
+- Can log multiple values: `console.log('User:', username)`
+
+### Key Patterns
+- Initialize on DOMContentLoaded (wait for HTML to load)
+- Use utility functions for common tasks
+- Log to console for debugging
+- Try-catch for error handling (localStorage can fail)
+
+### Next Steps
+- Learn about forms and validation
+- Learn about async/await for API calls
+- Practice DOM manipulation

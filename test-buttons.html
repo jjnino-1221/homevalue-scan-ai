@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button Component Test</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    body {
+      padding: var(--space-4);
+      max-width: var(--max-width-content);
+      margin: 0 auto;
+    }
+    .test-section {
+      margin-bottom: var(--space-6);
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <h1>Button Components</h1>
+
+  <div class="test-section">
+    <h2>Primary Buttons</h2>
+    <div class="button-group">
+      <button class="button button-primary">Primary Button</button>
+      <button class="button button-primary button-lg">Large Primary</button>
+      <button class="button button-primary button-sm">Small Primary</button>
+      <button class="button button-primary" disabled>Disabled Primary</button>
+      <button class="button button-primary button-full">Full Width Primary</button>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Secondary Buttons</h2>
+    <div class="button-group">
+      <button class="button button-secondary">Secondary Button</button>
+      <button class="button button-secondary button-lg">Large Secondary</button>
+      <button class="button button-secondary button-sm">Small Secondary</button>
+      <button class="button button-secondary" disabled>Disabled Secondary</button>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Interactive Test</h2>
+    <p>Click buttons to test active state (scale down)</p>
+    <p>Tab through buttons to test focus (red outline)</p>
+    <button class="button button-primary" onclick="alert('Button clicked!')">
+      Click Me!
+    </button>
+  </div>
+</body>
+</html>

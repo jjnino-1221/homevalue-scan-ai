@@ -1741,7 +1741,15 @@ function hideLoadingState() {
  * Show success message
  */
 function showSuccess(message) {
-  // Could show toast notification or temporary message
+  const errorContainer = document.getElementById('address-errors')
+  errorContainer.innerHTML = `<p class="form-success">${message}</p>`
+  errorContainer.style.display = 'block'
+
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    errorContainer.style.display = 'none'
+  }, 3000)
+
   console.log('Success:', message)
 }
 
@@ -2655,21 +2663,26 @@ function loadFromStorage(key) {
 **Goal:** Document Phase 2 work
 
 **Update `docs/learning-notes.md`:**
+
+**Note:** The template below shows the structure for documenting each session. Fill in your actual dates and add any additional notes, questions, or challenges you encounter. This running documentation helps track your learning journey.
+
 ```markdown
 ## Phase 2: Forms & Data Flow
 
-### Session X: Google API Setup
-**Date:** YYYY-MM-DD
+### Session 1: Google API Setup
+**Date:** [Your session date]
 
 **What I Built:**
 - Google Cloud project
 - Enabled Places and Geocoding APIs
 - API key with restrictions
+- Tested API calls in browser console
 
 **What I Learned:**
 - How to set up Google Cloud Console
 - API key security (HTTP referrer restrictions)
 - Free tier limits and costs
+- How to test APIs before integrating
 
 **Questions:**
 - How do I hide API key in production?
@@ -2677,12 +2690,44 @@ function loadFromStorage(key) {
 
 ---
 
-### Session X: Asynchronous JavaScript
-**Date:** YYYY-MM-DD
+### Session 2: Address Page HTML Structure
+**Date:** [Your session date]
+
+**What I Built:**
+- Created address.html with semantic structure
+- Added location button, input field, Continue button
+- Built location permission modal HTML
+
+**What I Learned:**
+- Semantic HTML structure
+- Modal/overlay HTML patterns
+- Form structure best practices
+
+---
+
+### Session 3: Address Page Styling
+**Date:** [Your session date]
+
+**What I Built:**
+- Form component styles
+- Modal and overlay styles
+- Responsive layout for address page
+
+**What I Learned:**
+- CSS modal patterns (overlay, centering, transitions)
+- Form input styling (focus states, error states)
+- Divider styling with pseudo-elements
+
+---
+
+### Session 4-5: Geolocation & Async JavaScript
+**Date:** [Your session dates]
 
 **What I Built:**
 - Geolocation flow with async/await
 - Google API calls with fetch()
+- Location permission modal interaction
+- Reverse geocoding implementation
 
 **What I Learned:**
 - Promises vs callbacks
@@ -2707,9 +2752,132 @@ async function myFunction() {
 }
 ```
 
+**Challenges:**
+- Understanding async flow and when to use await
+- Handling errors in async functions
+- Parsing Google Geocoding API responses
+
 ---
 
-(Continue documenting each session...)
+### Session 6-7: Address Autocomplete
+**Date:** [Your session dates]
+
+**What I Built:**
+- Google Places Autocomplete integration
+- Fallback for API failure (manual entry parsing)
+- Debounced input validation
+
+**What I Learned:**
+- Initializing Google Places library
+- Event listeners for autocomplete
+- Debouncing technique (performance optimization)
+- Regex patterns for address parsing
+
+---
+
+### Session 8: Form Validation
+**Date:** [Your session date]
+
+**What I Built:**
+- Validation rules for address components
+- Error message display logic
+- Continue button enable/disable logic
+
+**What I Learned:**
+- Form validation patterns
+- Regex for ZIP and state validation
+- Showing/hiding error messages dynamically
+
+---
+
+### Session 9: Data Persistence & Auto-Save
+**Date:** [Your session date]
+
+**What I Built:**
+- Auto-save on every action
+- currentStep tracking
+- Session initialization logic
+
+**What I Learned:**
+- localStorage save strategies
+- When to save data (every action vs page transitions)
+- Session management patterns
+
+---
+
+### Session 10: Resume Detection
+**Date:** [Your session date]
+
+**What I Built:**
+- Resume modal on landing page
+- Continue from saved step logic
+- Start fresh / clear data logic
+
+**What I Learned:**
+- Detecting saved progress
+- Building dynamic modals with JavaScript
+- State restoration patterns
+
+---
+
+### Session 11-12: Instructions Page
+**Date:** [Your session dates]
+
+**What I Built:**
+- Instructions page HTML with 5 room cards
+- Card styling with responsive grid
+- Example image placeholders
+
+**What I Learned:**
+- Card-based layouts
+- CSS Grid for responsive design
+- Aspect ratio boxes (16:9)
+
+---
+
+### Session 13: Address → Instructions Flow
+**Date:** [Your session date]
+
+**What I Built:**
+- Connected address page to instructions page
+- Page-specific initialization functions
+- Navigation validation
+
+**What I Learned:**
+- Multi-page application flow
+- Validating data before navigation
+- Restoring state on page load
+
+---
+
+### Session 14-15: Error Handling & Testing
+**Date:** [Your session dates]
+
+**What I Built:**
+- Error handling for all scenarios
+- Graceful degradation patterns
+- Cross-device testing
+
+**What I Learned:**
+- Testing on real devices (iPhone, Android)
+- Network error handling
+- localStorage edge cases
+- Debugging techniques
+
+---
+
+### Session 16: Documentation & Wrap-up
+**Date:** [Your session date]
+
+**What I Built:**
+- Updated README
+- Created testing checklist
+- Git commit and tag
+
+**What I Learned:**
+- Documenting completed work
+- Creating git milestones
+- Preparing for next phase
 ```
 
 **Update `README.md`:**
@@ -2734,6 +2902,12 @@ async function myFunction() {
 **Create `docs/phase-2-testing-checklist.md`:**
 (Copy testing checklist from Task 13)
 
+**Add API Key to .gitignore:**
+```bash
+# Add to .gitignore file
+docs/api-key.txt
+```
+
 **Commit & Tag:**
 ```bash
 git add .
@@ -2751,6 +2925,8 @@ Phase 2 complete: address entry → instructions page flow working"
 
 git tag -a v0.2.0-phase2 -m "Phase 2 Complete: Forms & Data Flow"
 ```
+
+**Example Image Placeholders:** The instruction card example images will be gray placeholder boxes with "Example photo" text for Phase 2. These are purely visual placeholders (CSS-generated) and don't require actual image files. In future phases, these could be replaced with actual example photos if desired, but CSS placeholders are sufficient for the PoC.
 
 ---
 

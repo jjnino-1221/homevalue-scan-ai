@@ -25,7 +25,7 @@
 
       <!-- Location Button -->
       <button type="button" id="location-button" class="button button-primary button-full">
-        📍 Use My Location
+        <span aria-hidden="true">📍</span> Use My Location
       </button>
 
       <!-- Divider -->
@@ -42,9 +42,14 @@
           class="form-input"
           placeholder="123 Main Street, City, State ZIP"
           autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          required
+          aria-invalid="false"
+          aria-describedby="address-errors"
         >
         <div id="autocomplete-dropdown" class="autocomplete-dropdown"></div>
-        <div id="address-errors"></div>
+        <div id="address-errors" role="alert" aria-live="polite"></div>
       </div>
 
       <!-- Continue Button -->
@@ -53,16 +58,16 @@
       </button>
 
       <!-- Privacy Note -->
-      <p class="privacy-note">🔒 Your data stays private</p>
+      <p class="privacy-note"><span aria-hidden="true">🔒</span> Your data stays private</p>
     </main>
   </div>
 
   <!-- Location Permission Modal -->
   <div id="location-modal" class="modal">
     <div class="modal-overlay">
-      <div class="modal-content">
-        <div class="modal-header">📍</div>
-        <h2 class="modal-title">Use Your Location</h2>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header"><span aria-hidden="true">📍</span></div>
+        <h2 class="modal-title" id="modal-title">Use Your Location</h2>
         <div class="modal-body">
           <p>We'll use your location to find your property address.</p>
           <p>Your location is private and never shared.</p>

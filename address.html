@@ -1,88 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Property Address - Mobile Valuation</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Address - Mobile Valuation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+
+  <!-- Google Places API - Replace YOUR_API_KEY with actual key from docs/api-key.txt -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Property Address</h1>
-            <p class="subtitle">Where is the property located?</p>
-        </header>
+  <div class="page-container">
+    <!-- Navigation -->
+    <nav class="page-nav">
+      <a href="index.html" class="nav-back">← Back to Home</a>
+    </nav>
 
-        <main>
-            <form id="address-form" novalidate>
-                <button type="button" id="location-btn" class="location-btn">
-                    <span aria-hidden="true">📍</span> Use My Location
-                </button>
+    <!-- Main Content -->
+    <main>
+      <h1>Where's your property?</h1>
+      <p class="subtitle">We'll use this to find homes like yours nearby</p>
 
-                <div class="form-group">
-                    <label for="street">Street Address</label>
-                    <input
-                        type="text"
-                        id="street"
-                        name="street"
-                        autocomplete="off"
-                        placeholder="123 Main St"
-                        required
-                        aria-describedby="street-error"
-                    >
-                    <div id="street-error" class="error-message" role="alert" aria-live="polite"></div>
-                </div>
+      <!-- Location Button -->
+      <button type="button" id="location-button" class="button button-primary button-full">
+        📍 Use My Location
+      </button>
 
-                <div class="form-group">
-                    <label for="city">City</label>
-                    <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        placeholder="San Francisco"
-                        required
-                        aria-describedby="city-error"
-                    >
-                    <div id="city-error" class="error-message" role="alert" aria-live="polite"></div>
-                </div>
+      <!-- Divider -->
+      <div class="divider">
+        <span>or</span>
+      </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <input
-                            type="text"
-                            id="state"
-                            name="state"
-                            maxlength="2"
-                            placeholder="CA"
-                            required
-                            aria-describedby="state-error"
-                        >
-                        <div id="state-error" class="error-message" role="alert" aria-live="polite"></div>
-                    </div>
+      <!-- Address Input -->
+      <div class="form-group autocomplete-container">
+        <label for="address-input" class="form-label">Property Address</label>
+        <input
+          type="text"
+          id="address-input"
+          class="form-input"
+          placeholder="123 Main Street, City, State ZIP"
+          autocomplete="off"
+        >
+        <div id="autocomplete-dropdown" class="autocomplete-dropdown"></div>
+        <div id="address-errors"></div>
+      </div>
 
-                    <div class="form-group">
-                        <label for="zip">ZIP Code</label>
-                        <input
-                            type="text"
-                            id="zip"
-                            name="zip"
-                            maxlength="5"
-                            inputmode="numeric"
-                            pattern="[0-9]{5}"
-                            placeholder="94102"
-                            required
-                            aria-describedby="zip-error"
-                        >
-                        <div id="zip-error" class="error-message" role="alert" aria-live="polite"></div>
-                    </div>
-                </div>
+      <!-- Continue Button -->
+      <button type="button" id="continue-button" class="button button-secondary button-full" disabled>
+        Continue →
+      </button>
 
-                <button type="submit" class="btn-primary">Continue to Photos</button>
-            </form>
-        </main>
+      <!-- Privacy Note -->
+      <p class="privacy-note">🔒 Your data stays private</p>
+    </main>
+  </div>
+
+  <!-- Location Permission Modal -->
+  <div id="location-modal" class="modal">
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">📍</div>
+        <h2 class="modal-title">Use Your Location</h2>
+        <div class="modal-body">
+          <p>We'll use your location to find your property address.</p>
+          <p>Your location is private and never shared.</p>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="button button-primary" id="allow-location">Allow</button>
+          <button type="button" class="button button-secondary" id="deny-location">No thanks</button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script type="module" src="js/address-page.js"></script>
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/geolocation.js"></script>
+  <script src="js/autocomplete.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

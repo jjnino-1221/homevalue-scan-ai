@@ -304,3 +304,344 @@
   background: var(--rocket-red);
   color: white;
 }
+
+/* ========================================
+   FORM COMPONENTS
+   ======================================== */
+
+/* Form Group Container */
+.form-group {
+  margin-bottom: var(--space-3); /* 24px */
+}
+
+/* Form Label */
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1); /* 8px */
+  letter-spacing: 0.5px;
+}
+
+/* Form Input */
+.form-input {
+  width: 100%;
+  font-size: 18px;
+  padding: 16px;
+  border: 2px solid var(--border-gray);
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: var(--font-family);
+}
+
+.form-input:focus {
+  border-color: var(--rocket-red);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(210, 34, 45, 0.1);
+}
+
+.form-input.error {
+  border-color: var(--error-red);
+}
+
+.form-input.success {
+  border-color: var(--success-green);
+}
+
+.form-input:disabled {
+  background: var(--background-gray);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Form Error Message */
+.form-error {
+  color: var(--error-red);
+  font-size: 14px;
+  margin-top: var(--space-1); /* 8px */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-error::before {
+  content: '⚠️';
+}
+
+/* Form Success Message */
+.form-success {
+  color: var(--success-green);
+  font-size: 14px;
+  margin-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-success::before {
+  content: '✓';
+}
+
+/* Divider */
+.divider {
+  text-align: center;
+  margin: var(--space-3) 0;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--border-gray);
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+.divider span {
+  color: var(--text-light);
+  font-size: 14px;
+  padding: 0 16px;
+  background: var(--background);
+}
+
+/* ========================================
+   MODAL & OVERLAY
+   ======================================== */
+
+/* Modal Container */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: none; /* Hidden by default */
+}
+
+/* Modal Overlay (dark background) */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+}
+
+/* Modal Content Box */
+.modal-content {
+  background: white;
+  padding: var(--space-4); /* 32px */
+  border-radius: 12px;
+  max-width: 90%;
+  width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+/* Modal Header */
+.modal-header {
+  font-size: 48px;
+  margin-bottom: var(--space-2);
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.modal-body {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+}
+
+.modal-body p {
+  margin-bottom: var(--space-2);
+}
+
+.modal-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Modal Buttons */
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.modal-actions .button {
+  width: 100%;
+}
+
+/* ========================================
+   LOADING SPINNER
+   ======================================== */
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Button with loading state */
+.button.loading {
+  position: relative;
+  color: transparent; /* Hide text */
+  pointer-events: none; /* Disable clicks */
+}
+
+.button.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -10px 0 0 -10px;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ========================================
+   AUTOCOMPLETE DROPDOWN
+   ======================================== */
+
+/* Dropdown Container */
+.autocomplete-container {
+  position: relative;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid var(--border-gray);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  display: none; /* Hidden by default */
+}
+
+.autocomplete-dropdown.active {
+  display: block;
+}
+
+/* Dropdown Item */
+.autocomplete-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.highlighted {
+  background: var(--background-gray);
+}
+
+.autocomplete-item.selected {
+  background: rgba(210, 34, 45, 0.1);
+  color: var(--rocket-red);
+}
+
+.autocomplete-item-icon {
+  font-size: 20px;
+}
+
+.autocomplete-item-text {
+  flex: 1;
+  font-size: 16px;
+}
+
+/* Empty State */
+.autocomplete-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+/* ========================================
+   WARNING BANNER
+   ======================================== */
+
+/* Warning Banner (for API failures) */
+.warning-banner {
+  background: #FFF3CD;
+  border-left: 4px solid #FFA500;
+  padding: var(--space-2);
+  margin-bottom: var(--space-3);
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.warning-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.warning-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Photos - Mobile Valuation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Navigation -->
+    <nav class="page-nav">
+      <a href="capture.html" class="nav-back">← Back to Capture</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+      <h1>Review Your Photos</h1>
+      <p class="subtitle">Tap any photo to retake it</p>
+
+      <!-- Photo Grid -->
+      <div id="photo-grid" class="photo-grid">
+        <!-- Photos will be dynamically inserted here -->
+      </div>
+
+      <!-- Submit Button -->
+      <button type="button" id="submit-button" class="button button-primary button-full" disabled>
+        Submit Valuation Request
+      </button>
+
+      <!-- Progress Message -->
+      <p id="progress-message" class="progress-message">
+        Capture all 5 photos to continue
+      </p>
+    </main>
+
+    <!-- Retake Confirmation Modal (hidden by default) -->
+    <div id="retake-modal" class="modal" style="display: none;">
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <h3>Retake this photo?</h3>
+          <p id="retake-room-name"></p>
+          <div class="modal-actions">
+            <button type="button" id="confirm-retake" class="button button-primary">
+              Yes, Retake
+            </button>
+            <button type="button" id="cancel-retake" class="button button-secondary">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/photo-storage.js"></script>
+  <script src="js/review-page.js"></script>
+</body>
+</html>

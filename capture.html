@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capture Photos - Mobile Valuation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0" async></script>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Header -->
+    <header class="capture-header">
+      <button type="button" id="back-button" class="nav-back">← Back</button>
+      <h2 id="room-title">Front Exterior</h2>
+      <span id="progress-indicator">1/5</span>
+    </header>
+
+    <!-- Main Camera Area -->
+    <main class="capture-main">
+      <!-- Camera Viewfinder -->
+      <div class="camera-container">
+        <video id="camera-feed" autoplay playsinline></video>
+
+        <!-- Corner markers for framing guide -->
+        <div class="corner-marker top-left"></div>
+        <div class="corner-marker top-right"></div>
+        <div class="corner-marker bottom-left"></div>
+        <div class="corner-marker bottom-right"></div>
+
+        <!-- Quality feedback overlay -->
+        <div id="quality-overlay" class="quality-overlay">
+          <span id="quality-message" class="quality-message"></span>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <p id="capture-instructions" class="capture-instructions">
+        Stand across the street if possible
+      </p>
+
+      <!-- Capture Button -->
+      <button type="button" id="capture-button" class="button button-capture">
+        <span class="capture-icon">📷</span>
+      </button>
+
+      <!-- Camera Permission Error (hidden by default) -->
+      <div id="camera-error" class="error-message" style="display: none;">
+        <p>Unable to access camera</p>
+        <button type="button" id="upload-fallback" class="button button-secondary">
+          Upload Photo Instead
+        </button>
+      </div>
+
+      <!-- File Input (hidden, for fallback) -->
+      <input type="file" id="file-input" accept="image/*" style="display: none;">
+    </main>
+
+    <!-- LiDAR Scanning Modal (hidden by default) -->
+    <div id="lidar-modal" class="modal" style="display: none;">
+      <div class="modal-overlay">
+        <div class="modal-content">
+          <h3>Scanning room dimensions...</h3>
+          <div class="scanning-animation">
+            <div class="scanning-line"></div>
+          </div>
+          <p id="lidar-status">Analyzing depth data...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/photo-storage.js"></script>
+  <script src="js/capture-controller.js"></script>
+  <script src="js/lidar-scanner.js"></script>
+  <script src="js/quality-analyzer.js"></script>
+  <script src="js/capture-main.js"></script>
+</body>
+</html>

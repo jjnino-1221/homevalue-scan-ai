@@ -890,3 +890,455 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 
 ---
 
+
+## Chunk 4: Capture Controller (State Machine)
+
+### Task 8: Create capture-controller.js Module
+
+**Files:**
+- Create: `C:\Users\JNino\Projects\mobile-valuation\js\capture-controller.js`
+
+- [ ] **Step 1: Write test outline and room configuration**
+
+```javascript
+/**
+ * Capture Controller Module
+ * State machine for room navigation and progress tracking
+ *
+ * Tests to run manually:
+ * 1. initCapture() - should load saved progress or start at room 0
+ * 2. getRoomConfig() - should return room details by index
+ * 3. navigateToRoom() - should update UI and save progress
+ * 4. checkCompletion() - should detect when all 5 rooms captured
+ * 5. updateProgress() - should save state to localStorage
+ */
+
+const CaptureController = (function() {
+  const PROGRESS_KEY = 'captureProgress';
+
+  const ROOMS = [
+    { name: 'Front Exterior', icon: '🏠', tip: 'Capture full front view including roof and landscaping', room: 'exterior' },
+    { name: 'Kitchen', icon: '🍳', tip: 'Include countertops, cabinets, and major appliances', room: 'kitchen' },
+    { name: 'Living Room', icon: '🛋️', tip: 'Show overall layout and main furniture', room: 'living' },
+    { name: 'Master Bedroom', icon: '🛏️', tip: 'Capture bed and closet areas', room: 'bedroom' },
+    { name: 'Master Bathroom', icon: '🚿', tip: 'Include vanity, shower/tub, and fixtures', room: 'bathroom' }
+  ];
+
+  let currentRoomIndex = 0;
+  let roomsCompleted = [];
+
+  // Test 1: Initialize capture state
+  function initCapture() {
+    // TODO: implement
+    return { currentRoomIndex: 0, roomsCompleted: [] };
+  }
+
+  // Test 2: Get room configuration by index
+  function getRoomConfig(roomIndex) {
+    // TODO: implement
+    return null;
+  }
+
+  // Test 3: Navigate to next/previous room
+  function navigateToRoom(direction) {
+    // TODO: implement
+    return null;
+  }
+
+  // Test 4: Check if all rooms captured
+  function checkCompletion() {
+    // TODO: implement
+    return { complete: false };
+  }
+
+  // Test 5: Update progress in localStorage
+  function updateProgress() {
+    // TODO: implement
+    return { saved: false };
+  }
+
+  return {
+    initCapture,
+    getRoomConfig,
+    navigateToRoom,
+    checkCompletion,
+    updateProgress,
+    getCurrentRoomIndex: () => currentRoomIndex,
+    getRoomsCompleted: () => roomsCompleted
+  };
+})();
+```
+
+- [ ] **Step 2: Test module loads**
+
+Add `console.log('Capture controller module loaded')` at end.
+Refresh `capture.html`.
+Expected: Console shows module loaded message.
+
+- [ ] **Step 3: Implement getRoomConfig()**
+
+```javascript
+function getRoomConfig(roomIndex) {
+  if (roomIndex < 0 || roomIndex >= ROOMS.length) {
+    console.error('Invalid room index:', roomIndex);
+    return null;
+  }
+
+  const config = ROOMS[roomIndex];
+  console.log('Room config:', config.name);
+  return config;
+}
+```
+
+- [ ] **Step 4: Test getRoomConfig()**
+
+In browser console:
+```javascript
+console.log(CaptureController.getRoomConfig(0)); // Front Exterior
+console.log(CaptureController.getRoomConfig(1)); // Kitchen
+```
+Expected: Returns room configuration objects.
+
+- [ ] **Step 5: Implement initCapture()**
+
+```javascript
+function initCapture() {
+  const savedProgress = loadFromStorage(PROGRESS_KEY);
+
+  if (savedProgress) {
+    currentRoomIndex = savedProgress.currentRoomIndex || 0;
+    roomsCompleted = savedProgress.roomsCompleted || [];
+    console.log('Resuming at room', currentRoomIndex, '- completed:', roomsCompleted.length);
+  } else {
+    currentRoomIndex = 0;
+    roomsCompleted = [];
+    console.log('Starting new capture session');
+  }
+
+  return { currentRoomIndex, roomsCompleted };
+}
+```
+
+- [ ] **Step 6: Test initCapture() with no saved data**
+
+In browser console:
+```javascript
+localStorage.removeItem('captureProgress');
+const state = CaptureController.initCapture();
+console.log(state);
+```
+Expected: Returns `{ currentRoomIndex: 0, roomsCompleted: [] }`.
+
+- [ ] **Step 7: Implement updateProgress()**
+
+```javascript
+function updateProgress() {
+  const progress = {
+    currentRoomIndex,
+    roomsCompleted,
+    timestamp: new Date().toISOString()
+  };
+
+  const saved = saveToStorage(PROGRESS_KEY, progress);
+
+  if (saved) {
+    console.log('✓ Progress saved');
+    return { saved: true };
+  } else {
+    return { saved: false, error: 'Storage failed' };
+  }
+}
+```
+
+- [ ] **Step 8: Test updateProgress()**
+
+In browser console:
+```javascript
+CaptureController.updateProgress();
+const saved = loadFromStorage('captureProgress');
+console.log(saved);
+```
+Expected: Progress object saved to localStorage.
+
+- [ ] **Step 9: Implement checkCompletion()**
+
+```javascript
+function checkCompletion() {
+  const allPhotos = PhotoStorage.getAllPhotos();
+  const complete = allPhotos.length === 5;
+
+  console.log('Completion check:', allPhotos.length, '/ 5 photos');
+
+  if (complete) {
+    return { complete: true, redirect: 'review.html' };
+  } else {
+    return { complete: false };
+  }
+}
+```
+
+- [ ] **Step 10: Test checkCompletion()**
+
+In browser console:
+```javascript
+console.log(CaptureController.checkCompletion());
+```
+Expected: Returns `{ complete: false }` (no photos saved yet).
+
+- [ ] **Step 11: Implement navigateToRoom()**
+
+```javascript
+function navigateToRoom(direction) {
+  const previousIndex = currentRoomIndex;
+
+  if (direction === 'next') {
+    currentRoomIndex = Math.min(currentRoomIndex + 1, ROOMS.length - 1);
+  } else if (direction === 'back') {
+    currentRoomIndex = Math.max(currentRoomIndex - 1, 0);
+  }
+
+  // Save progress
+  updateProgress();
+
+  const config = getRoomConfig(currentRoomIndex);
+  const canGoBack = currentRoomIndex > 0;
+
+  console.log('Navigated', direction, ':', previousIndex, '→', currentRoomIndex);
+
+  return {
+    room: config.room,
+    index: currentRoomIndex,
+    canGoBack,
+    config
+  };
+}
+```
+
+- [ ] **Step 12: Test navigateToRoom()**
+
+In browser console:
+```javascript
+CaptureController.navigateToRoom('next');
+console.log(CaptureController.getCurrentRoomIndex()); // Should be 1
+CaptureController.navigateToRoom('back');
+console.log(CaptureController.getCurrentRoomIndex()); // Should be 0
+```
+Expected: Room index changes correctly.
+
+- [ ] **Step 13: Add markRoomComplete() helper**
+
+```javascript
+function markRoomComplete(room) {
+  if (!roomsCompleted.includes(room)) {
+    roomsCompleted.push(room);
+    console.log('✓ Marked', room, 'complete');
+  }
+  updateProgress();
+}
+```
+
+Add to exports:
+
+```javascript
+return {
+  initCapture,
+  getRoomConfig,
+  navigateToRoom,
+  checkCompletion,
+  updateProgress,
+  markRoomComplete,
+  getCurrentRoomIndex: () => currentRoomIndex,
+  getRoomsCompleted: () => roomsCompleted
+};
+```
+
+- [ ] **Step 14: Commit**
+
+```bash
+git add js/capture-controller.js
+git commit -m "feat: add capture-controller.js state machine
+
+- ROOMS configuration with 5 room details
+- initCapture() loads saved progress or starts fresh
+- getRoomConfig() returns room details by index
+- navigateToRoom() handles next/back navigation
+- checkCompletion() detects when all photos captured
+- updateProgress() saves state to localStorage
+- markRoomComplete() tracks captured rooms
+- Manual tests pass in browser console
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+
+---
+
+## Chunk 7: Review Page & Final Integration
+
+### Task 14: Create review-page.js Module
+
+**Files:**
+- Create: `C:\Users\JNino\Projects\mobile-valuation\js\review-page.js`
+
+- [ ] **Step 1: Create review page module with grid rendering**
+
+```javascript
+/**
+ * Review Page Module
+ */
+
+const ReviewPage = (function() {
+  const ROOM_NAMES = {
+    exterior: 'Front Exterior',
+    kitchen: 'Kitchen',
+    living: 'Living Room',
+    bedroom: 'Master Bedroom',
+    bathroom: 'Master Bathroom'
+  };
+
+  function renderPhotoGrid() {
+    const photos = PhotoStorage.getAllPhotos();
+    const grid = document.getElementById('photo-grid');
+
+    if (photos.length === 0) {
+      grid.innerHTML = '<p>No photos found. <a href="capture.html">Start capturing</a></p>';
+      return;
+    }
+
+    grid.innerHTML = photos.map((photo) => `
+      <div class="photo-card">
+        <img src="${photo.imageData}" alt="${photo.room}" class="photo-thumbnail" />
+        <div class="photo-info">
+          <h3>${ROOM_NAMES[photo.room] || photo.room}</h3>
+          <p class="dimensions">${photo.dimensions || 'No dimensions'} ft</p>
+          <button class="button button-secondary" onclick="ReviewPage.handleRetake('${photo.room}')">Retake</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function handleRetake(room) {
+    PhotoStorage.deletePhoto(room);
+    const roomIndex = ['exterior', 'kitchen', 'living', 'bedroom', 'bathroom'].indexOf(room);
+    const progress = { currentRoomIndex: roomIndex, roomsCompleted: [], timestamp: new Date().toISOString() };
+    saveToStorage('captureProgress', progress);
+    navigateTo('capture.html');
+  }
+
+  function handleSubmit() {
+    saveToStorage('completionTimestamp', new Date().toISOString());
+    alert('Phase 4: Results page coming soon!');
+  }
+
+  function getCompletionStats() {
+    const sessionStart = loadFromStorage('sessionStarted');
+    const now = new Date();
+    const start = new Date(sessionStart);
+    const totalMinutes = Math.round((now - start) / 60000);
+    return { totalMinutes, photoCount: PhotoStorage.getAllPhotos().length };
+  }
+
+  return {
+    renderPhotoGrid,
+    handleRetake,
+    handleSubmit,
+    getCompletionStats
+  };
+})();
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReviewPage.renderPhotoGrid();
+  const stats = ReviewPage.getCompletionStats();
+  document.getElementById('total-time').textContent = stats.totalMinutes;
+  document.getElementById('submit-button').addEventListener('click', ReviewPage.handleSubmit);
+});
+
+console.log('Review page module loaded');
+```
+
+- [ ] **Step 2: Test review page with captured photos**
+
+Capture 5 photos, navigate to review.html.
+Expected: All 5 photos display in grid.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add js/review-page.js
+git commit -m "feat: add review page module
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 15: Add CSS Styles
+
+**Files:**
+- Modify: `C:\Users\JNino\Projects\mobile-valuation\css\components.css`
+
+- [ ] **Step 1: Add camera and review page CSS**
+
+Append comprehensive styles for camera interface, quality banner, lidar overlay, photo grid, etc. (Use existing design system variables)
+
+- [ ] **Step 2: Test styling**
+
+Open capture.html and review.html.
+Expected: All components styled consistently.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add css/components.css
+git commit -m "feat: add Phase 3 CSS styles
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 16: End-to-End Testing & Documentation
+
+**Files:**
+- Create: `C:\Users\JNino\Projects\mobile-valuation\docs\phase-3-testing-checklist.md`
+- Modify: `C:\Users\JNino\Projects\mobile-valuation\README.md`
+
+- [ ] **Step 1: Create testing checklist**
+
+Copy acceptance criteria from spec to testing checklist file.
+
+- [ ] **Step 2: Run complete flow test**
+
+Test instructions → capture (5 rooms) → review → submit.
+Expected: Complete flow works without errors.
+
+- [ ] **Step 3: Update README**
+
+Update status badge to "Phase 3 Complete" and progress to 75%.
+
+- [ ] **Step 4: Create git tag**
+
+```bash
+git tag -a v0.3.0-phase3 -m "Phase 3: Camera & Photo Capture Complete"
+```
+
+- [ ] **Step 5: Commit documentation**
+
+```bash
+git add docs/phase-3-testing-checklist.md README.md
+git commit -m "docs: Phase 3 completion and testing
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+---
+
+## Plan Complete
+
+**Total Tasks:** 16 tasks covering all Phase 3 requirements
+**Estimated Time:** 4-6 sessions (learn-by-doing pace)
+**Next Step:** Execute using @superpowers:subagent-driven-development or @superpowers:executing-plans
+
+---
+
+**End of Implementation Plan**

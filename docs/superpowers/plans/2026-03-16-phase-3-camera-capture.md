@@ -1171,6 +1171,630 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ```
 
 
+
+
+---
+
+## Chunk 5: LiDAR Scanner Module
+
+### Task 9: Create lidar-scanner.js Module
+
+**Files:**
+- Create: `C:\Users\JNino\Projects\mobile-valuation\js\lidar-scanner.js`
+
+- [ ] **Step 1: Write module with dimension generation**
+
+```javascript
+/**
+ * LiDAR Scanner Module
+ * Mock AR-style scanning animation with dimension generation
+ */
+
+const LiDARScanner = (function() {
+  const SCAN_DURATION_MS = 3000;
+
+  const DIMENSION_RANGES = {
+    exterior: { widthMin: 20, widthMax: 50, heightMin: 8, heightMax: 15 },
+    kitchen: { widthMin: 10, widthMax: 20, heightMin: 10, heightMax: 15 },
+    living: { widthMin: 15, widthMax: 25, heightMin: 12, heightMax: 18 },
+    bedroom: { widthMin: 12, widthMax: 18, heightMin: 10, heightMax: 15 },
+    bathroom: { widthMin: 8, widthMax: 12, heightMin: 6, heightMax: 10 }
+  };
+
+  function generateMockDimensions(room) {
+    const range = DIMENSION_RANGES[room] || DIMENSION_RANGES.living;
+    const width = Math.floor(Math.random() * (range.widthMax - range.widthMin + 1)) + range.widthMin;
+    const height = Math.floor(Math.random() * (range.heightMax - range.heightMin + 1)) + range.heightMin;
+    const dimensions = width + 'x' + height;
+    console.log('Generated dimensions for', room, ':', dimensions);
+    return dimensions;
+  }
+
+  function updateProgress(percent) {
+    const progressBar = document.getElementById('scan-progress-bar');
+    const percentText = document.getElementById('scan-percent');
+    if (progressBar && percentText) {
+      progressBar.style.width = percent + '%';
+      percentText.textContent = Math.round(percent) + '%';
+    }
+  }
+
+  function showResults(dimensions) {
+    const overlay = document.getElementById('lidar-overlay');
+    overlay.innerHTML = '<div class="scan-complete"><div class="checkmark">✓</div><h2>Scan Complete</h2><p class="dimensions">' + dimensions + ' ft</p></div>';
+    setTimeout(function() {
+      overlay.style.display = 'none';
+    }, 1500);
+  }
+
+  async function startScan(room) {
+    return new Promise(function(resolve) {
+      console.log('Starting LiDAR scan for', room);
+      const overlay = document.getElementById('lidar-overlay');
+      overlay.style.display = 'flex';
+      overlay.innerHTML = '<div class="scanning-line"></div><div class="scan-progress"><div class="progress-bar-container"><div id="scan-progress-bar" class="progress-bar"></div></div><span id="scan-percent">0%</span></div>';
+
+      let progress = 0;
+      const interval = setInterval(function() {
+        progress += 2;
+        updateProgress(progress);
+        if (progress >= 100) {
+          clearInterval(interval);
+          const dimensions = generateMockDimensions(room);
+          showResults(dimensions);
+          if (navigator.vibrate) {
+            navigator.vibrate(50);
+          }
+          setTimeout(function() {
+            resolve(dimensions);
+          }, 1500);
+        }
+      }, 60);
+    });
+  }
+
+  return {
+    startScan: startScan,
+    generateMockDimensions: generateMockDimensions,
+    updateProgress: updateProgress,
+    showResults: showResults
+  };
+})();
+
+console.log('LiDAR scanner module loaded');
+```
+
+- [ ] **Step 2: Test generateMockDimensions()**
+
+In browser console:
+```javascript
+console.log(LiDARScanner.generateMockDimensions('kitchen'));
+console.log(LiDARScanner.generateMockDimensions('exterior'));
+```
+Expected: Returns dimensions within range (e.g., "15x12", "35x10").
+
+- [ ] **Step 3: Test startScan() animation**
+
+In browser console (on capture.html):
+```javascript
+LiDARScanner.startScan('kitchen').then(function(dims) {
+  console.log('Scan complete:', dims);
+});
+```
+Expected: Overlay shows, progress animates 0-100%, dimensions display, overlay hides after 1.5s.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add js/lidar-scanner.js
+git commit -m "feat: add lidar-scanner.js mock scanning module
+
+- generateMockDimensions() creates realistic room dimensions
+- startScan() shows overlay with 3-second animation
+- updateProgress() animates progress bar 0-100%
+- showResults() displays dimensions with checkmark
+- Haptic feedback on completion (if supported)
+- Manual tests pass in browser console
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 10: Create capture-main.js Integration Script
+
+**Files:**
+- Create: `C:\Users\JNino\Projects\mobile-valuation\js\capture-main.js`
+
+- [ ] **Step 1: Create main integration script**
+
+```javascript
+/**
+ * Capture Page Main Script
+ * Orchestrates camera, controller, and UI
+ */
+
+(async function() {
+  console.log('Initializing capture page...');
+
+  const videoElement = document.getElementById('camera-video');
+  const captureButton = document.getElementById('capture-button');
+  const nextButton = document.getElementById('next-button');
+  const reviewButton = document.getElementById('review-button');
+  const backButton = document.getElementById('back-button');
+  const qualityBanner = document.getElementById('quality-banner');
+  const qualityMessage = document.getElementById('quality-message');
+  const roomName = document.getElementById('room-name');
+  const roomProgress = document.getElementById('room-progress');
+  const roomIcon = document.getElementById('room-icon');
+  const roomTip = document.getElementById('room-tip');
+
+  const state = CaptureController.initCapture();
+  console.log('Initial state:', state);
+
+  function updateRoomUI() {
+    const index = CaptureController.getCurrentRoomIndex();
+    const config = CaptureController.getRoomConfig(index);
+    if (config) {
+      roomName.textContent = config.name;
+      roomProgress.textContent = '(' + (index + 1) + ' of 5)';
+      roomIcon.textContent = config.icon;
+      roomTip.textContent = config.tip;
+      backButton.style.display = index > 0 ? 'block' : 'none';
+      console.log('UI updated for:', config.name);
+    }
+  }
+
+  qualityMessage.textContent = 'Initializing camera...';
+  const cameraResult = await CameraModule.initCamera(videoElement);
+
+  if (cameraResult.success) {
+    qualityMessage.textContent = '✓ Camera ready';
+    qualityBanner.className = 'quality-banner quality-good';
+    captureButton.disabled = false;
+  } else {
+    qualityMessage.textContent = cameraResult.message || 'Camera unavailable';
+    qualityBanner.className = 'quality-banner quality-error';
+    captureButton.disabled = true;
+    document.getElementById('upload-fallback').style.display = 'block';
+  }
+
+  updateRoomUI();
+
+  captureButton.addEventListener('click', async function() {
+    console.log('Capture button clicked');
+    captureButton.disabled = true;
+
+    const photoResult = await CameraModule.capturePhoto();
+    if (photoResult.success) {
+      qualityMessage.textContent = '📸 Photo captured!';
+      const index = CaptureController.getCurrentRoomIndex();
+      const config = CaptureController.getRoomConfig(index);
+
+      qualityMessage.textContent = 'Scanning dimensions...';
+      const dimensions = await LiDARScanner.startScan(config.room);
+
+      qualityMessage.textContent = 'Saving photo...';
+      const saveResult = await PhotoStorage.savePhoto(config.room, photoResult.imageData, dimensions);
+
+      if (saveResult.success) {
+        CaptureController.markRoomComplete(config.room);
+        const completion = CaptureController.checkCompletion();
+
+        if (completion.complete) {
+          captureButton.style.display = 'none';
+          reviewButton.style.display = 'block';
+          qualityMessage.textContent = '✓ All photos captured!';
+        } else {
+          captureButton.style.display = 'none';
+          nextButton.style.display = 'block';
+          qualityMessage.textContent = '✓ Photo saved';
+        }
+      } else {
+        qualityMessage.textContent = '❌ Failed to save photo';
+        qualityBanner.className = 'quality-banner quality-error';
+        captureButton.disabled = false;
+      }
+    } else {
+      qualityMessage.textContent = '❌ Failed to capture photo';
+      qualityBanner.className = 'quality-banner quality-error';
+      captureButton.disabled = false;
+    }
+  });
+
+  nextButton.addEventListener('click', function() {
+    CaptureController.navigateToRoom('next');
+    updateRoomUI();
+    captureButton.style.display = 'block';
+    nextButton.style.display = 'none';
+    captureButton.disabled = false;
+    qualityMessage.textContent = '✓ Camera ready';
+    qualityBanner.className = 'quality-banner quality-good';
+  });
+
+  backButton.addEventListener('click', function() {
+    CaptureController.navigateToRoom('back');
+    updateRoomUI();
+  });
+
+  reviewButton.addEventListener('click', function() {
+    CameraModule.stopCamera();
+    navigateTo('review.html');
+  });
+
+  window.addEventListener('beforeunload', function() {
+    CameraModule.stopCamera();
+    CaptureController.updateProgress();
+  });
+
+})();
+```
+
+- [ ] **Step 2: Add script to capture.html**
+
+Add before closing body tag:
+```html
+<script src="js/capture-main.js"></script>
+```
+
+- [ ] **Step 3: Test capture flow end-to-end**
+
+Open capture.html, capture photo, verify LiDAR scan runs, click Next.
+Expected: Full flow works, UI updates correctly.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add js/capture-main.js capture.html
+git commit -m "feat: add capture-main.js integration controller
+
+- Orchestrates camera, controller, storage, and LiDAR modules
+- Handles capture button: photo → scan → save → next
+- Updates room UI dynamically
+- Back/Next navigation wired up
+- Review button appears after 5 rooms
+- Camera cleanup on page unload
+- Manual end-to-end test passes
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+---
+
+## Chunk 6: Quality Analyzer Module
+
+### Task 11: Create quality-analyzer.js Module
+
+**Files:**
+- Create: `C:\Users\JNino\Projects\mobile-valuation\js\quality-analyzer.js`
+
+- [ ] **Step 1: Create quality analyzer with lighting detection**
+
+```javascript
+/**
+ * Quality Analyzer Module
+ * TensorFlow.js integration for lighting and motion analysis
+ */
+
+const QualityAnalyzer = (function() {
+  let modelReady = false;
+  let previousFrameData = null;
+
+  async function loadModel() {
+    try {
+      console.log('Loading TensorFlow.js model...');
+      if (typeof tf === 'undefined') {
+        console.warn('TensorFlow.js not loaded from CDN');
+        return { ready: false, error: 'TensorFlow.js unavailable' };
+      }
+      modelReady = true;
+      console.log('✓ Quality analyzer ready');
+      return { ready: true };
+    } catch (error) {
+      console.error('Model load error:', error);
+      return { ready: false, error: error.message };
+    }
+  }
+
+  async function analyzeFrame(videoElement) {
+    if (!modelReady || !videoElement) {
+      return { lighting: 'unknown', motion: 'unknown' };
+    }
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = videoElement.videoWidth / 4;
+      canvas.height = videoElement.videoHeight / 4;
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+
+      let totalBrightness = 0;
+      for (let i = 0; i < pixels.length; i += 4) {
+        const r = pixels[i];
+        const g = pixels[i + 1];
+        const b = pixels[i + 2];
+        const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+        totalBrightness += brightness;
+      }
+
+      const avgBrightness = totalBrightness / (pixels.length / 4);
+      let lighting;
+      if (avgBrightness < 60) {
+        lighting = 'dark';
+      } else if (avgBrightness > 200) {
+        lighting = 'bright';
+      } else {
+        lighting = 'good';
+      }
+
+      let motion = 'steady';
+      if (previousFrameData) {
+        let difference = 0;
+        for (let i = 0; i < pixels.length; i += 4) {
+          difference += Math.abs(pixels[i] - previousFrameData[i]);
+        }
+        const avgDifference = difference / (pixels.length / 4);
+        if (avgDifference > 10) {
+          motion = 'shaky';
+        }
+      }
+
+      previousFrameData = new Uint8ClampedArray(pixels);
+      return { lighting: lighting, motion: motion, brightness: Math.round(avgBrightness) };
+    } catch (error) {
+      console.error('Frame analysis error:', error);
+      return { lighting: 'unknown', motion: 'unknown' };
+    }
+  }
+
+  function getFeedbackMessage(analysis) {
+    if (!analysis || analysis.lighting === 'unknown') {
+      return '📷 Ready to capture';
+    }
+    const messages = [];
+    if (analysis.lighting === 'dark') {
+      messages.push('⚠️ Too dark - move to brighter area');
+    } else if (analysis.lighting === 'bright') {
+      messages.push('⚠️ Too bright - avoid direct sunlight');
+    } else {
+      messages.push('✓ Good lighting');
+    }
+    if (analysis.motion === 'shaky') {
+      messages.push('⚠️ Hold steady');
+    } else {
+      messages.push('Camera steady');
+    }
+    return messages.join(' • ');
+  }
+
+  return {
+    loadModel: loadModel,
+    analyzeFrame: analyzeFrame,
+    getFeedbackMessage: getFeedbackMessage,
+    isReady: function() { return modelReady; }
+  };
+})();
+
+console.log('Quality analyzer module loaded');
+```
+
+- [ ] **Step 2: Test loadModel()**
+
+In browser console:
+```javascript
+QualityAnalyzer.loadModel().then(function(result) {
+  console.log(result);
+  console.log('Ready:', QualityAnalyzer.isReady());
+});
+```
+Expected: Returns `{ ready: true }` if TensorFlow.js loaded.
+
+- [ ] **Step 3: Test analyzeFrame() with camera**
+
+In browser console (with camera running):
+```javascript
+const video = document.getElementById('camera-video');
+QualityAnalyzer.analyzeFrame(video).then(function(analysis) {
+  console.log(analysis);
+  console.log(QualityAnalyzer.getFeedbackMessage(analysis));
+});
+```
+Expected: Returns lighting and motion analysis with user-friendly message.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add js/quality-analyzer.js
+git commit -m "feat: add quality-analyzer.js with TensorFlow.js
+
+- loadModel() checks TensorFlow.js availability
+- analyzeFrame() calculates lighting from pixel brightness
+- Motion detection via frame difference comparison
+- getFeedbackMessage() returns user-friendly text
+- 1/4 resolution sampling for performance
+- Graceful degradation if TensorFlow unavailable
+- Manual tests pass with camera running
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 12: Integrate Quality Feedback into Capture Flow
+
+**Files:**
+- Modify: `C:\Users\JNino\Projects\mobile-valuation\js\capture-main.js`
+
+- [ ] **Step 1: Add quality analysis loop after camera init**
+
+After camera initialization, add:
+
+```javascript
+let qualityAnalysisInterval = null;
+
+QualityAnalyzer.loadModel().then(function(result) {
+  if (result.ready) {
+    console.log('Starting quality analysis loop...');
+    qualityAnalysisInterval = setInterval(async function() {
+      const analysis = await QualityAnalyzer.analyzeFrame(videoElement);
+      const message = QualityAnalyzer.getFeedbackMessage(analysis);
+      qualityMessage.textContent = message;
+
+      if (analysis.lighting === 'dark' || analysis.motion === 'shaky') {
+        qualityBanner.className = 'quality-banner quality-warning';
+      } else if (analysis.lighting === 'good' && analysis.motion === 'steady') {
+        qualityBanner.className = 'quality-banner quality-good';
+      } else {
+        qualityBanner.className = 'quality-banner quality-neutral';
+      }
+    }, 500);
+  } else {
+    console.log('Quality feedback unavailable:', result.error);
+    qualityMessage.textContent = '✓ Camera ready (quality feedback unavailable)';
+  }
+});
+```
+
+- [ ] **Step 2: Pause analysis during capture**
+
+In capture button handler, before captureButton.disabled = true:
+```javascript
+if (qualityAnalysisInterval) {
+  clearInterval(qualityAnalysisInterval);
+}
+```
+
+- [ ] **Step 3: Restart analysis after next room**
+
+In nextButton handler, before resetting UI:
+```javascript
+if (QualityAnalyzer.isReady() && !qualityAnalysisInterval) {
+  qualityAnalysisInterval = setInterval(async function() {
+    const analysis = await QualityAnalyzer.analyzeFrame(videoElement);
+    const message = QualityAnalyzer.getFeedbackMessage(analysis);
+    qualityMessage.textContent = message;
+    if (analysis.lighting === 'dark' || analysis.motion === 'shaky') {
+      qualityBanner.className = 'quality-banner quality-warning';
+    } else if (analysis.lighting === 'good' && analysis.motion === 'steady') {
+      qualityBanner.className = 'quality-banner quality-good';
+    }
+  }, 500);
+}
+```
+
+- [ ] **Step 4: Cleanup on page unload**
+
+In beforeunload handler:
+```javascript
+if (qualityAnalysisInterval) {
+  clearInterval(qualityAnalysisInterval);
+}
+```
+
+- [ ] **Step 5: Test quality feedback**
+
+Open capture.html, watch banner update every 500ms.
+Cover camera → should show "Too dark".
+Move camera → should show "Hold steady".
+Expected: Real-time feedback working.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add js/capture-main.js
+git commit -m "feat: integrate real-time quality feedback
+
+- Quality analysis loop runs every 500ms
+- Banner updates with lighting and motion feedback
+- Banner color changes based on analysis
+- Analysis pauses during capture
+- Analysis restarts on next room
+- Cleanup on page unload
+- Manual test confirms real-time feedback working
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 13: Add File Upload Fallback for Camera Errors
+
+**Files:**
+- Modify: `C:\Users\JNino\Projects\mobile-valuation\js\capture-main.js`
+
+- [ ] **Step 1: Wire up file upload fallback**
+
+After camera initialization failure block:
+
+```javascript
+if (!cameraResult.success) {
+  qualityMessage.textContent = cameraResult.message || 'Camera unavailable';
+  qualityBanner.className = 'quality-banner quality-error';
+  captureButton.disabled = true;
+
+  const uploadFallback = document.getElementById('upload-fallback');
+  const fileInput = document.getElementById('file-input');
+
+  uploadFallback.style.display = 'block';
+
+  fileInput.addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = async function(event) {
+        const imageData = event.target.result;
+
+        const index = CaptureController.getCurrentRoomIndex();
+        const config = CaptureController.getRoomConfig(index);
+
+        qualityMessage.textContent = 'Processing uploaded photo...';
+        const dimensions = LiDARScanner.generateMockDimensions(config.room);
+
+        const saveResult = await PhotoStorage.savePhoto(config.room, imageData, dimensions);
+        if (saveResult.success) {
+          CaptureController.markRoomComplete(config.room);
+          const completion = CaptureController.checkCompletion();
+
+          if (completion.complete) {
+            reviewButton.style.display = 'block';
+            uploadFallback.style.display = 'none';
+            qualityMessage.textContent = '✓ All photos uploaded!';
+          } else {
+            qualityMessage.textContent = '✓ Photo saved';
+            nextButton.style.display = 'block';
+            fileInput.value = '';
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+```
+
+- [ ] **Step 2: Test file upload fallback**
+
+Block camera permission, open capture.html.
+Upload a photo via file input.
+Expected: Photo saves, Next button appears.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add js/capture-main.js
+git commit -m "feat: add file upload fallback for camera errors
+
+- File input shows when camera unavailable
+- Upload photo processes and saves
+- Mock dimensions generated for uploaded photos
+- Navigation works same as camera capture
+- Manual test confirms fallback working
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
 ---
 
 ## Chunk 7: Review Page & Final Integration

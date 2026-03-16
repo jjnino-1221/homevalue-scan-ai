@@ -120,6 +120,36 @@ function initAddressPage() {
 }
 
 /**
+ * Initialize instructions page
+ */
+function initInstructionsPage() {
+  console.log('Instructions page loaded')
+
+  // Set current step
+  saveCurrentStep('instructions')
+
+  // Load saved address (for resume)
+  const address = loadFromStorage('propertyAddress')
+  if (!address) {
+    // No address saved, redirect back
+    console.warn('No address found, redirecting...')
+    navigateTo('address.html')
+    return
+  }
+
+  console.log('Address loaded:', address.fullAddress)
+
+  // Start Capturing button
+  onClick('#start-capture', () => {
+    console.log('Start Capturing clicked')
+    // Will navigate to capture.html in Phase 3
+    alert('Camera capture coming in Phase 3!')
+  })
+
+  console.log('✓ Instructions page initialized')
+}
+
+/**
  * Detect which page we're on and initialize appropriately
  */
 function initPage() {
@@ -133,6 +163,8 @@ function initPage() {
     initLandingPage();
   } else if (page === 'address.html') {
     initAddressPage();
+  } else if (page === 'instructions.html') {
+    initInstructionsPage();
   }
   // Other page initializations will go here
 }

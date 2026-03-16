@@ -30,6 +30,9 @@ function saveToStorage(key, value) {
     return true;
   } catch (error) {
     console.error('Error saving to localStorage:', error);
+    if (error.name === 'QuotaExceededError') {
+      alert('Storage full. Please clear some data.');
+    }
     return false;
   }
 }
@@ -45,6 +48,8 @@ function loadFromStorage(key) {
     return jsonValue ? JSON.parse(jsonValue) : null;
   } catch (error) {
     console.error('Error loading from localStorage:', error);
+    // Corrupted data, clear it
+    localStorage.removeItem(key);
     return null;
   }
 }

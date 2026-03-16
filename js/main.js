@@ -142,8 +142,8 @@ function initInstructionsPage() {
   // Start Capturing button
   onClick('#start-capture', () => {
     console.log('Start Capturing clicked')
-    // Will navigate to capture.html in Phase 3
-    alert('Camera capture coming in Phase 3!')
+    saveCurrentStep('capture')
+    navigateTo('capture.html')
   })
 
   console.log('✓ Instructions page initialized')

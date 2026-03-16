@@ -67,3 +67,119 @@ function onClick(selector, handler) {
     element.addEventListener('click', handler);
   });
 }
+
+/**
+ * Show modal with fade-in animation
+ */
+function showModal(modalId) {
+  const modal = document.getElementById(modalId);
+  const overlay = modal.querySelector('.modal-overlay');
+
+  // Prevent body scroll
+  document.body.style.overflow = 'hidden';
+
+  // Show modal
+  modal.style.display = 'flex';
+
+  // Trigger fade-in (after brief delay for CSS transition)
+  setTimeout(() => {
+    overlay.classList.add('active');
+  }, 10);
+
+  // Focus first button
+  const firstButton = modal.querySelector('button');
+  if (firstButton) {
+    firstButton.focus();
+  }
+
+  // Add keyboard handlers
+  modal.addEventListener('keydown', handleModalKeydown);
+}
+
+/**
+ * Close modal with fade-out animation
+ */
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  const overlay = modal.querySelector('.modal-overlay');
+
+  // Fade out
+  overlay.classList.remove('active');
+
+  // Wait for animation, then hide
+  setTimeout(() => {
+    modal.style.display = 'none';
+    document.body.style.overflow = ''; // Restore scroll
+  }, 300); // Match CSS transition duration
+
+  // Remove keyboard handlers
+  modal.removeEventListener('keydown', handleModalKeydown);
+}
+
+/**
+ * Handle modal keyboard events
+ */
+function handleModalKeydown(e) {
+  if (e.key === 'Escape') {
+    closeModal(e.currentTarget.id);
+  }
+}
+
+/**
+ * Close modal when clicking outside
+ */
+function setupModalClickOutside(modalId) {
+  const modal = document.getElementById(modalId);
+  const overlay = modal.querySelector('.modal-overlay');
+
+  overlay.addEventListener('click', (e) => {
+    // Only close if clicking overlay itself, not modal content
+    if (e.target === overlay) {
+      closeModal(modalId);
+    }
+  });
+}
+
+/**
+ * Save current step to localStorage
+ */
+function saveCurrentStep(step) {
+  saveToStorage('currentStep', step);
+}
+
+/**
+ * Get current step from localStorage
+ */
+function getCurrentStep() {
+  return loadFromStorage('currentStep');
+}
+
+/**
+ * Initialize session if new
+ */
+function initSession() {
+  const sessionStarted = loadFromStorage('sessionStarted');
+
+  if (!sessionStarted) {
+    saveToStorage('sessionStarted', new Date().toISOString());
+    console.log('✓ New session started');
+  }
+}
+
+/**
+ * Check if session has saved progress
+ */
+function hasProgress() {
+  const currentStep = getCurrentStep();
+  const address = loadFromStorage('propertyAddress');
+
+  return currentStep && currentStep !== 'landing' && address;
+}
+
+/**
+ * Clear all session data
+ */
+function clearSession() {
+  clearStorage();
+  console.log('✓ Session cleared');
+}

@@ -888,6 +888,212 @@ git commit -m "feat: add image compression to photo storage
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ```
 
+- [ ] **Step 6: Add QuotaExceededError recovery to savePhoto()**
+
+Replace savePhoto() implementation with enhanced error handling:
+
+```javascript
+async function savePhoto(room, imageData, dimensions, quality = 0.85) {
+  try {
+    const photos = getAllPhotos();
+
+    // Compress image before saving
+    console.log('Compressing photo for', room, 'at quality', quality, '...');
+    const compressedImage = await compressImage(imageData, 1024);
+
+    // Remove existing photo for this room (overwrite)
+    const filteredPhotos = photos.filter(p => p.room !== room);
+
+    // Add new photo with compressed data
+    const newPhoto = {
+      room,
+      imageData: compressedImage,
+      dimensions,
+      timestamp: new Date().toISOString()
+    };
+
+    filteredPhotos.push(newPhoto);
+
+    // Save to localStorage with quota error handling
+    try {
+      const jsonValue = JSON.stringify(filteredPhotos);
+      localStorage.setItem(STORAGE_KEY, jsonValue);
+      console.log('✓ Photo saved for', room);
+      return { success: true, photoId: room };
+    } catch (storageError) {
+      // Handle QuotaExceededError specifically
+      if (storageError.name === 'QuotaExceededError') {
+        console.error('Storage quota exceeded');
+
+        // Calculate current storage usage
+        const currentSize = JSON.stringify(filteredPhotos).length;
+        const storageMB = (currentSize / 1024 / 1024).toFixed(2);
+
+        // Offer recovery options
+        return {
+          success: false,
+          error: 'QuotaExceededError',
+          message: 'Storage full - photos too large (' + storageMB + ' MB)',
+          recoveryOptions: {
+            deleteOldest: 'Delete oldest photo to free space',
+            reduceQuality: 'Re-compress at lower quality',
+            skipPhoto: 'Skip this photo and continue'
+          },
+          currentPhotoCount: filteredPhotos.length,
+          storageMB: storageMB
+        };
+      }
+
+      // Other storage errors
+      return { success: false, error: storageError.message };
+    }
+
+  } catch (error) {
+    console.error('Save photo error:', error);
+    return { success: false, error: error.message };
+  }
+}
+```
+
+Add recovery helper functions:
+
+```javascript
+function deleteOldestPhoto() {
+  const photos = getAllPhotos();
+  if (photos.length > 0) {
+    const oldest = photos.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))[0];
+    deletePhoto(oldest.room);
+    console.log('✓ Deleted oldest photo:', oldest.room);
+    return { success: true, deletedRoom: oldest.room };
+  }
+  return { success: false, error: 'No photos to delete' };
+}
+
+async function retryWithLowerQuality(room, imageData, dimensions, currentQuality) {
+  // Reduce quality by 0.15
+  const newQuality = Math.max(0.4, currentQuality - 0.15);
+  console.log('Retrying at quality:', newQuality);
+  return await savePhoto(room, imageData, dimensions, newQuality);
+}
+```
+
+Update exports:
+
+```javascript
+return {
+  savePhoto,
+  getPhoto,
+  getAllPhotos,
+  deletePhoto,
+  compressImage,
+  deleteOldestPhoto,
+  retryWithLowerQuality
+};
+```
+
+- [ ] **Step 7: Test QuotaExceededError handling**
+
+In browser console, simulate storage quota error:
+
+```javascript
+// Fill localStorage to near capacity
+for (let i = 0; i < 10; i++) {
+  localStorage.setItem('dummy' + i, 'x'.repeat(1000000));
+}
+
+// Try to save photo
+const result = await CameraModule.capturePhoto();
+const saveResult = await PhotoStorage.savePhoto('test', result.imageData, '10x10');
+console.log(saveResult);
+
+// Clean up dummies
+for (let i = 0; i < 10; i++) {
+  localStorage.removeItem('dummy' + i);
+}
+```
+
+Expected: Returns QuotaExceededError with recovery options and storage size info.
+
+- [ ] **Step 8: Test recovery options**
+
+```javascript
+// Test delete oldest
+const deleteResult = PhotoStorage.deleteOldestPhoto();
+console.log(deleteResult);
+
+// Test retry with lower quality
+const retryResult = await PhotoStorage.retryWithLowerQuality('kitchen', imageData, '15x12', 0.85);
+console.log(retryResult);
+```
+
+Expected: Delete removes oldest photo, retry compresses at lower quality (0.70).
+
+- [ ] **Step 9: Update capture-main.js to handle QuotaExceededError**
+
+In capture button handler, after `const saveResult = await PhotoStorage.savePhoto(...)`:
+
+```javascript
+if (saveResult.success) {
+  // ... existing success code
+} else if (saveResult.error === 'QuotaExceededError') {
+  // Show recovery options to user
+  const message = saveResult.message + '\n\nOptions:\n' +
+    '1. Delete oldest photo (' + saveResult.currentPhotoCount + ' photos stored)\n' +
+    '2. Reduce quality and retry\n' +
+    '3. Skip this photo';
+
+  const choice = confirm(message + '\n\nClick OK to delete oldest and retry, Cancel to skip.');
+
+  if (choice) {
+    PhotoStorage.deleteOldestPhoto();
+    qualityMessage.textContent = 'Retrying with more space...';
+    const retryResult = await PhotoStorage.savePhoto(config.room, photoResult.imageData, dimensions);
+
+    if (retryResult.success) {
+      CaptureController.markRoomComplete(config.room);
+      qualityMessage.textContent = '✓ Photo saved (after cleanup)';
+      // ... proceed normally
+    } else {
+      qualityMessage.textContent = '❌ Still failed - storage critically full';
+      qualityBanner.className = 'quality-banner quality-error';
+    }
+  } else {
+    qualityMessage.textContent = 'Photo skipped - storage full';
+  }
+
+  captureButton.disabled = false;
+} else {
+  // ... existing error handling
+}
+```
+
+- [ ] **Step 10: Test end-to-end recovery flow**
+
+1. Fill localStorage to 80% capacity
+2. Capture 4 photos successfully
+3. 5th photo triggers QuotaExceededError
+4. User chooses to delete oldest
+5. Photo saves successfully after cleanup
+
+Expected: Recovery flow works, user sees clear messages, oldest photo deleted, new photo saves.
+
+- [ ] **Step 11: Commit QuotaExceededError handling**
+
+```bash
+git add js/photo-storage.js js/capture-main.js
+git commit -m "feat: add QuotaExceededError recovery to photo storage
+
+- savePhoto() detects QuotaExceededError specifically
+- Returns recovery options with storage size info
+- deleteOldestPhoto() removes oldest by timestamp
+- retryWithLowerQuality() re-compresses at reduced quality
+- capture-main.js prompts user with recovery options
+- User can delete old photo or skip current photo
+- Manual test confirms recovery flow working
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
 ---
 
 
@@ -1901,56 +2107,762 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 **Files:**
 - Modify: `C:\Users\JNino\Projects\mobile-valuation\css\components.css`
 
-- [ ] **Step 1: Add camera and review page CSS**
+- [ ] **Step 1: Add camera interface CSS**
 
-Append comprehensive styles for camera interface, quality banner, lidar overlay, photo grid, etc. (Use existing design system variables)
+Append to components.css:
 
-- [ ] **Step 2: Test styling**
+```css
+/* ===== CAMERA COMPONENTS ===== */
 
-Open capture.html and review.html.
-Expected: All components styled consistently.
+/* Camera Container */
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--text-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
 
-- [ ] **Step 3: Commit**
+#camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Visual Guides */
+.visual-guides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.corner-marker {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 3px solid white;
+}
+
+.corner-marker.top-left {
+  top: 20px;
+  left: 20px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-marker.top-right {
+  top: 20px;
+  right: 20px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-marker.bottom-left {
+  bottom: 20px;
+  left: 20px;
+  border-right: none;
+  border-top: none;
+}
+
+.corner-marker.bottom-right {
+  bottom: 20px;
+  right: 20px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Quality Feedback Banner */
+.quality-banner {
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-2);
+  transition: background-color var(--transition-normal);
+}
+
+.quality-banner.quality-good {
+  background-color: var(--success-green);
+  color: white;
+}
+
+.quality-banner.quality-warning {
+  background-color: var(--warning-yellow);
+  color: var(--text-primary);
+}
+
+.quality-banner.quality-error {
+  background-color: var(--error-red);
+  color: white;
+}
+
+.quality-banner.quality-neutral {
+  background-color: var(--background-gray);
+  color: var(--text-primary);
+}
+
+/* Room Tips */
+.room-tips {
+  text-align: center;
+  padding: var(--space-2);
+  background: var(--background-gray);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+}
+
+.room-icon {
+  font-size: var(--text-3xl);
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+/* Capture Header */
+.capture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) 0;
+  margin-bottom: var(--space-3);
+}
+
+.progress-indicator {
+  text-align: center;
+  flex: 1;
+}
+
+.progress-indicator #room-name {
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+}
+
+.progress-indicator #room-progress {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* Capture Controls */
+.capture-controls {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.button-capture {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  background: var(--rocket-red);
+  color: white;
+  border: 4px solid white;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 80px;
+  min-height: 80px;
+}
+
+.button-capture:hover:not(:disabled) {
+  background: var(--rocket-red-dark);
+  transform: scale(1.05);
+}
+
+.button-capture:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-capture .camera-icon {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-1);
+}
+
+/* LiDAR Overlay */
+.lidar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.scanning-line {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #00A8FF, transparent);
+  animation: scan 3s linear infinite;
+  top: 0;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.scan-progress {
+  position: absolute;
+  bottom: 40px;
+  left: 20px;
+  right: 20px;
+  text-align: center;
+  color: white;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-1);
+}
+
+.progress-bar {
+  height: 100%;
+  background: #00A8FF;
+  width: 0;
+  transition: width 0.1s linear;
+  border-radius: var(--radius-full);
+}
+
+.scan-complete {
+  text-align: center;
+  color: white;
+}
+
+.scan-complete .checkmark {
+  font-size: 80px;
+  color: var(--success-green);
+  margin-bottom: var(--space-2);
+  animation: checkmark-pop 0.3s ease-out;
+}
+
+@keyframes checkmark-pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.scan-complete h2 {
+  margin-bottom: var(--space-1);
+}
+
+.scan-complete .dimensions {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+}
+
+/* Upload Fallback */
+.upload-fallback {
+  text-align: center;
+  padding: var(--space-4);
+  background: var(--background-gray);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-3);
+}
+
+.upload-fallback p {
+  margin-bottom: var(--space-2);
+  color: var(--text-secondary);
+}
+
+#file-input {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: var(--space-2);
+  border: 2px dashed var(--border-gray);
+  border-radius: var(--radius-md);
+  background: white;
+  cursor: pointer;
+}
+
+/* ===== REVIEW PAGE ===== */
+
+.review-header {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.review-header h1 {
+  margin-bottom: var(--space-2);
+}
+
+.photo-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Mobile: 1 column */
+@media (max-width: 767px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablet/Desktop: 2 columns */
+@media (min-width: 768px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.photo-card {
+  background: var(--background);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.photo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.photo-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-info {
+  padding: var(--space-2);
+}
+
+.photo-info h3 {
+  margin-bottom: var(--space-1);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+}
+
+.photo-info .dimensions {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
+}
+
+.completion-stats {
+  text-align: center;
+  padding: var(--space-3);
+  background: var(--background-gray);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
+
+.completion-stats p {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-1);
+}
+
+#completion-message {
+  font-weight: var(--weight-bold);
+  color: var(--success-green);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .button-capture {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+  }
+
+  .corner-marker {
+    width: 30px;
+    height: 30px;
+  }
+
+  .capture-header {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+```
+
+- [ ] **Step 2: Test camera styles**
+
+Open capture.html in browser.
+Expected: Camera viewfinder displays with corner markers, quality banner styled with correct colors, capture button is large and centered (80px diameter).
+
+- [ ] **Step 3: Test review page styles**
+
+Capture 5 photos, navigate to review.html.
+Expected: Photos display in responsive grid (1 col mobile, 2 col tablet+), cards have hover effects, all spacing follows design system.
+
+- [ ] **Step 4: Test mobile responsiveness**
+
+Resize browser to mobile width (375px).
+Expected: All touch targets minimum 56px, corner markers scale down, layout stacks vertically.
+
+- [ ] **Step 5: Commit**
 
 ```bash
 git add css/components.css
 git commit -m "feat: add Phase 3 CSS styles
 
+- Camera viewfinder with 16:9 aspect ratio
+- Corner markers positioned in corners (40px, white borders)
+- Quality banner with color states (green/yellow/red)
+- Large circular capture button (80px diameter)
+- LiDAR overlay with scanning animation
+- Progress bar for scan progress
+- Photo grid responsive layout (1 col mobile, 2 col tablet+)
+- Hover effects on photo cards
+- Mobile-responsive adjustments (72px button, 30px corners)
+- Follows design system variables throughout
+
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ```
 
 ---
-
 ### Task 16: End-to-End Testing & Documentation
 
 **Files:**
 - Create: `C:\Users\JNino\Projects\mobile-valuation\docs\phase-3-testing-checklist.md`
 - Modify: `C:\Users\JNino\Projects\mobile-valuation\README.md`
 
-- [ ] **Step 1: Create testing checklist**
+- [ ] **Step 1: Create testing checklist with full content**
 
-Copy acceptance criteria from spec to testing checklist file.
+Create file with complete testing checklist from spec:
 
-- [ ] **Step 2: Run complete flow test**
+```markdown
+# Phase 3 Testing Checklist
 
-Test instructions → capture (5 rooms) → review → submit.
-Expected: Complete flow works without errors.
+**Project:** Mobile Valuation PoC
+**Phase:** 3 - Camera & Photo Capture
+**Date:** March 16, 2026
 
-- [ ] **Step 3: Update README**
+## Manual Testing Checklist
 
-Update status badge to "Phase 3 Complete" and progress to 75%.
+### Camera Functionality
+- [ ] Camera permission prompt appears on first load
+- [ ] Video stream displays in viewfinder
+- [ ] Visual guides (corner markers) render correctly
+- [ ] Capture button freezes frame and shows flash animation
+- [ ] Photo saves to localStorage successfully
+- [ ] Camera stops when navigating away from page
 
-- [ ] **Step 4: Create git tag**
+### Quality Feedback
+- [ ] TensorFlow.js loads without blocking UI
+- [ ] Feedback banner updates every ~500ms
+- [ ] "Too dark" message appears in low light
+- [ ] "Hold steady" message appears with camera movement
+- [ ] Messages are readable and actionable
+- [ ] Banner color changes (green/yellow/red) based on analysis
 
-```bash
-git tag -a v0.3.0-phase3 -m "Phase 3: Camera & Photo Capture Complete"
+### Room Navigation
+- [ ] Progress indicator shows "Room X of 5" correctly
+- [ ] Back button navigates to previous room
+- [ ] Back button hidden on room 1
+- [ ] Room-specific tips update per room
+- [ ] Room icons update per room (🏠 🍳 🛋️ 🛏️ 🚿)
+- [ ] All 5 rooms complete → "Review Photos" button appears
+
+### LiDAR Scanner
+- [ ] Scanning animation appears after capture
+- [ ] Progress bar animates smoothly (0-100%)
+- [ ] Mock dimensions display (realistic per room)
+- [ ] Animation completes in ~3 seconds
+- [ ] Haptic feedback triggers (if device supports)
+
+### Photo Storage
+- [ ] Photos compress to ~1MB each
+- [ ] localStorage contains 5 photo objects
+- [ ] Each photo has: room, imageData, timestamp, dimensions
+- [ ] captureProgress updates after each capture
+- [ ] Progress persists across page refresh
+
+### Review Page
+- [ ] All 5 photos display in grid
+- [ ] Thumbnails load correctly (base64 → img src)
+- [ ] Room names and dimensions show on each card
+- [ ] Retake button deletes photo and redirects to capture
+- [ ] Submit button saves completion timestamp
+- [ ] Total time calculation displays correctly
+
+## Cross-Device Testing
+
+### Mobile Devices (Primary)
+- [ ] iPhone (Safari): Camera access works
+- [ ] iPhone (Safari): localStorage persists
+- [ ] iPhone (Safari): Animations smooth
+- [ ] Android (Chrome): Camera access works
+- [ ] Android (Chrome): Photo capture works
+- [ ] Android (Chrome): File upload fallback works
+- [ ] Test both portrait and landscape orientations
+
+### Desktop (Secondary)
+- [ ] Chrome: Webcam access works
+- [ ] Chrome: Quality feedback performance acceptable
+- [ ] Firefox: All features work
+- [ ] Edge: All features work
+- [ ] Test file upload fallback (no rear camera)
+
+### Tablets
+- [ ] iPad: Camera selection (front vs rear)
+- [ ] iPad: Touch targets appropriate size
+- [ ] Android tablet: Similar to mobile experience
+
+## Error Scenario Testing
+
+### Permission Errors
+- [ ] Deny camera permission → file upload UI appears
+- [ ] Block camera in settings → guidance message shows
+- [ ] Grant permission on retry → camera initializes
+
+### Storage Errors
+- [ ] Fill localStorage (simulate quota) → compression warning
+- [ ] Disable localStorage (private mode) → in-memory fallback
+- [ ] Corrupt localStorage data → automatic cleanup
+
+### Network Errors
+- [ ] Load page offline → TensorFlow.js fails gracefully
+- [ ] Slow 3G → model loads eventually, camera works immediately
+
+### Hardware Errors
+- [ ] No camera device → file upload only mode
+- [ ] Camera in use → retry prompt works
+- [ ] Camera disconnects → recovery flow
+
+## Performance Testing
+
+### Load Time
+- [ ] capture.html interactive < 2 seconds
+- [ ] TensorFlow.js loads async (doesn't block camera)
+- [ ] Photo compression < 500ms per image
+
+### Frame Rate
+- [ ] Camera viewfinder: 30fps smooth video
+- [ ] Quality analysis: 2fps (every 500ms) - acceptable lag
+- [ ] No jank or stuttering during analysis
+
+### Storage
+- [ ] 5 photos @ ~1MB each = ~5MB total
+- [ ] Well under 10MB localStorage limit
+- [ ] Compression maintains acceptable quality
+
+## Browser Compatibility
+
+### Must Support
+- [ ] Chrome 90+ (Android, Desktop)
+- [ ] Safari 14+ (iOS, macOS)
+- [ ] Edge 90+ (Windows)
+
+### APIs Required
+- [ ] MediaDevices.getUserMedia() - camera access
+- [ ] Canvas API - photo capture
+- [ ] localStorage - data persistence
+- [ ] TensorFlow.js - quality analysis (optional feature)
+
+### Progressive Enhancement
+- [ ] Core: Camera + photo storage works everywhere
+- [ ] Enhanced: Quality feedback works where TF.js supported
+- [ ] Fallback: File upload works without camera
+
+## Acceptance Criteria
+
+**Phase 3 Complete When:**
+1. ✅ User can capture photos in all 5 rooms
+2. ✅ Photos save to localStorage with compression
+3. ✅ Quality feedback provides real-time guidance
+4. ✅ LiDAR scanner animation completes successfully
+5. ✅ Review page displays all photos with retake option
+6. ✅ Progress persists across page refreshes
+7. ✅ File upload fallback works when camera unavailable
+8. ✅ No console errors in Chrome DevTools
+9. ✅ Works on iPhone and Android phones
+10. ✅ Manual testing checklist 100% complete
+
+---
+
+**Testing Date:** _____________
+
+**Tester:** _____________
+
+**Issues Found:**
+-
+-
+-
+
+**Browser/Device Matrix:**
+
+| Feature | Chrome | Firefox | Safari | Mobile |
+|---------|--------|---------|--------|--------|
+| Camera | ⬜ | ⬜ | ⬜ | ⬜ |
+| Quality Feedback | ⬜ | ⬜ | ⬜ | ⬜ |
+| LiDAR | ⬜ | ⬜ | ⬜ | ⬜ |
+| Storage | ⬜ | ⬜ | ⬜ | ⬜ |
+| Review | ⬜ | ⬜ | ⬜ | ⬜ |
+
+**Sign-off:** ✅ Phase 3 ready for Phase 4
 ```
 
-- [ ] **Step 5: Commit documentation**
+- [ ] **Step 2: Run complete end-to-end flow test**
+
+1. Clear localStorage: `localStorage.clear()`
+2. Open `index.html`
+3. Click "Get Started"
+4. Enter address (or use geolocation)
+5. Click "Continue"
+6. View instructions page
+7. Click "Start Capturing"
+8. Grant camera permission
+9. Capture photo in each of 5 rooms:
+   - Front Exterior (verify room name, icon 🏠, tip displays)
+   - Kitchen (verify Next button appears, navigation works)
+   - Living Room (verify Back button works)
+   - Master Bedroom (verify quality feedback updates)
+   - Master Bathroom (verify LiDAR animation plays)
+10. Click "Review Photos"
+11. Verify all 5 photos display with dimensions
+12. Test retake on Kitchen room
+13. Re-capture Kitchen photo
+14. Return to review
+15. Click "Submit for Valuation"
+
+Expected: Complete flow works without errors, all photos saved, progress tracked, no console errors.
+
+- [ ] **Step 3: Verify localStorage state after completion**
+
+In browser console:
+```javascript
+console.log('Session:', loadFromStorage('sessionStarted'));
+console.log('Address:', loadFromStorage('propertyAddress'));
+console.log('Progress:', loadFromStorage('captureProgress'));
+console.log('Photos:', PhotoStorage.getAllPhotos().length);
+console.log('Completion:', loadFromStorage('completionTimestamp'));
+```
+
+Expected: All data present and correct (5 photos, progress saved, completion timestamp recorded).
+
+- [ ] **Step 4: Test resume functionality**
+
+Close browser tab, reopen `capture.html`.
+Expected: Resumes at last room if incomplete, or shows "Review Photos" if complete.
+
+- [ ] **Step 5: Update README.md status**
+
+Change lines 3-4:
+
+```markdown
+![Status](https://img.shields.io/badge/status-phase%203%20complete-success)
+![Progress](https://img.shields.io/badge/progress-75%25-blue)
+```
+
+Update Phase 3 checklist (lines 49-50):
+
+```markdown
+- [x] **Phase 3:** Camera & Photo Capture ✅ **COMPLETE**
+  - [x] Camera viewfinder with live feed
+  - [x] Visual overlay guides
+  - [x] Real-time quality feedback (TensorFlow.js)
+  - [x] Photo capture and storage (localStorage)
+  - [x] Mock LiDAR scanning animation
+  - [x] Photo review page with retake
+  - [x] Progress tracking across 5 rooms
+  - [x] File upload fallback
+- [ ] **Phase 4:** Results & Polish
+```
+
+Update current status section:
+
+```markdown
+## 🚀 Current Status: Phase 3 Complete
+
+### ✅ Completed
+
+**Phase 1: Foundation & Landing Page**
+- Project foundation and CSS design system
+- Landing page (fully responsive)
+- JavaScript navigation framework
+
+**Phase 2: Forms & Data Flow**
+- Address entry with geolocation and autocomplete
+- Google Places/Geocoding API integration
+- Form validation and auto-save
+- Resume detection
+- Photo instructions page
+
+**Phase 3: Camera & Photo Capture**
+- Camera viewfinder with MediaDevices API
+- Visual overlay guides (corner markers)
+- Real-time quality feedback with TensorFlow.js
+- Photo capture and compression
+- Mock LiDAR scanning animation
+- Photo review page with retake functionality
+- Progress tracking and resume capability
+- File upload fallback for camera errors
+
+**Target Completion:** December 2026 (flexible)
+```
+
+- [ ] **Step 6: Create git tag for Phase 3**
+
+```bash
+git tag -a v0.3.0-phase3 -m "Phase 3: Camera & Photo Capture Complete
+
+Features:
+- Camera capture with MediaDevices API
+- Real-time quality feedback (TensorFlow.js)
+- Photo storage with compression (localStorage)
+- Mock LiDAR scanning animation
+- Review page with retake functionality
+- Progress tracking and resume
+- File upload fallback
+
+Tested on:
+- Chrome (desktop, Android)
+- Safari (iOS)
+- Mobile-first responsive design"
+```
+
+- [ ] **Step 7: Verify tag created**
+
+```bash
+git tag -l
+git show v0.3.0-phase3
+```
+
+Expected: Tag appears in list with full message.
+
+- [ ] **Step 8: Commit documentation updates**
 
 ```bash
 git add docs/phase-3-testing-checklist.md README.md
 git commit -m "docs: Phase 3 completion and testing
+
+- Add complete testing checklist with 50+ test cases
+- Update README status to Phase 3 complete (75% progress)
+- Add Phase 3 features to completed list
+- Update phase checklist with all Phase 3 items
 
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ```

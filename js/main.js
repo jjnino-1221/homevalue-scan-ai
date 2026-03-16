@@ -4,10 +4,78 @@
  */
 
 /**
+ * Check for saved progress on landing page
+ */
+function checkForResume() {
+  if (!hasProgress()) {
+    return // No saved progress
+  }
+
+  const address = loadFromStorage('propertyAddress')
+  const currentStep = getCurrentStep()
+
+  showResumeModal(address, currentStep)
+}
+
+/**
+ * Show resume modal with saved progress
+ */
+function showResumeModal(address, step) {
+  const modalHTML = `
+    <div id="resume-modal" class="modal" style="display: flex;">
+      <div class="modal-overlay active">
+        <div class="modal-content">
+          <div class="modal-header">👋</div>
+          <h2 class="modal-title">Welcome back!</h2>
+          <div class="modal-body">
+            <p>You were working on a valuation for:</p>
+            <p style="font-weight: 600; margin-top: 8px;">
+              ${address.street}<br>
+              ${address.city}, ${address.state} ${address.zip}
+            </p>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="button button-primary" id="resume-continue">
+              Continue
+            </button>
+            <button type="button" class="button button-secondary" id="resume-fresh">
+              Start Fresh
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+
+  document.body.insertAdjacentHTML('beforeend', modalHTML)
+
+  // Continue button
+  onClick('#resume-continue', () => {
+    const pageMap = {
+      'address': 'address.html',
+      'instructions': 'instructions.html',
+      'capture': 'capture.html' // Phase 3
+    }
+
+    const targetPage = pageMap[step] || 'address.html'
+    navigateTo(targetPage)
+  })
+
+  // Start fresh button
+  onClick('#resume-fresh', () => {
+    clearSession()
+    document.getElementById('resume-modal').remove()
+  })
+}
+
+/**
  * Initialize landing page
  */
 function initLandingPage() {
   console.log('Landing page loaded');
+
+  // Check for saved progress
+  checkForResume()
 
   // Add click handlers to all "Get Started" / "Start" buttons
   onClick('.hero-cta, .cta-container .button', function() {
@@ -17,6 +85,38 @@ function initLandingPage() {
 
   // Log when page is ready
   console.log('✓ Navigation handlers attached');
+}
+
+/**
+ * Initialize address page
+ */
+function initAddressPage() {
+  console.log('Address page loaded')
+
+  // Set current step
+  saveCurrentStep('address')
+
+  // Initialize geolocation
+  initGeolocation()
+
+  // Initialize autocomplete
+  initAutocomplete()
+
+  // Continue button handler
+  onClick('#continue-button', () => {
+    if (validateBeforeContinue()) {
+      navigateTo('instructions.html')
+    }
+  })
+
+  // Load saved address if exists
+  const savedAddress = loadFromStorage('propertyAddress')
+  if (savedAddress) {
+    fillAddressForm(savedAddress)
+    enableContinueButton()
+  }
+
+  console.log('✓ Address page initialized')
 }
 
 /**
@@ -31,6 +131,8 @@ function initPage() {
   // Initialize based on current page
   if (page === 'index.html' || page === '') {
     initLandingPage();
+  } else if (page === 'address.html') {
+    initAddressPage();
   }
   // Other page initializations will go here
 }

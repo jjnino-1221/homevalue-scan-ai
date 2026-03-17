@@ -674,3 +674,404 @@
     margin-bottom: 0; /* Grid gap handles spacing */
   }
 }
+
+/* ===== CAMERA CAPTURE STYLES ===== */
+
+/* Capture Page Header */
+.capture-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2);
+  background: var(--background);
+  border-bottom: 1px solid var(--border-gray);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.capture-header h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+#progress-indicator {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--weight-medium);
+}
+
+/* Capture Main Area */
+.capture-main {
+  padding: var(--space-2);
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+}
+
+/* Camera Container */
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--text-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+
+#camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Corner Markers - Framing Guides */
+.corner-marker {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 3px solid white;
+  pointer-events: none;
+}
+
+.corner-marker.top-left {
+  top: 20px;
+  left: 20px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-marker.top-right {
+  top: 20px;
+  right: 20px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-marker.bottom-left {
+  bottom: 20px;
+  left: 20px;
+  border-right: none;
+  border-top: none;
+}
+
+.corner-marker.bottom-right {
+  bottom: 20px;
+  right: 20px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Quality Feedback Overlay */
+.quality-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  text-align: center;
+  transition: background var(--transition-normal);
+}
+
+.quality-message {
+  color: white;
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+}
+
+.quality-overlay.quality-good {
+  background: rgba(0, 168, 107, 0.8);
+}
+
+.quality-overlay.quality-warning {
+  background: rgba(255, 165, 0, 0.8);
+}
+
+/* Capture Instructions */
+.capture-instructions {
+  text-align: center;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+/* Capture Button */
+.button-capture {
+  display: block;
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  background: var(--rocket-red);
+  color: white;
+  border: 4px solid white;
+  box-shadow: var(--shadow-lg);
+  margin: 0 auto var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-xl);
+}
+
+.button-capture:hover:not(:disabled) {
+  background: var(--rocket-red-dark);
+  transform: scale(1.05);
+}
+
+.button-capture:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.button-capture:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.capture-icon {
+  display: block;
+  font-size: 32px;
+}
+
+/* Camera Error State */
+.error-message {
+  background: var(--background-gray);
+  border: 2px solid var(--error-red);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
+.error-message p {
+  color: var(--error-red);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-2);
+}
+
+/* LiDAR Scanning Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  z-index: 1001;
+}
+
+.modal-content h3 {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-xl);
+}
+
+/* Scanning Animation */
+.scanning-animation {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: var(--space-3) 0;
+}
+
+.scanning-line {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #00A8FF, transparent);
+  animation: scan 3s linear infinite;
+  top: 0;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+#lidar-status {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-2);
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.modal-actions button {
+  flex: 1;
+}
+
+/* ===== REVIEW PAGE STYLES ===== */
+
+.photo-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Photo Card */
+.photo-card {
+  background: white;
+  border: 2px solid var(--border-gray);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.photo-card:hover {
+  border-color: var(--rocket-red);
+  box-shadow: var(--shadow-md);
+}
+
+.photo-card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--background-gray);
+}
+
+.photo-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.photo-card-image:hover .photo-card-overlay {
+  opacity: 1;
+}
+
+.retake-button {
+  background: white;
+  color: var(--text-primary);
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.retake-button:hover {
+  background: var(--rocket-red);
+  color: white;
+}
+
+/* Photo Card Placeholder */
+.photo-card-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--background-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid var(--border-gray);
+}
+
+.placeholder-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-2);
+  opacity: 0.3;
+}
+
+.placeholder-text {
+  color: var(--text-light);
+  font-size: var(--text-sm);
+}
+
+/* Photo Card Info */
+.photo-card-info {
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.photo-card-icon {
+  font-size: 24px;
+}
+
+.photo-card-title {
+  flex: 1;
+  font-size: var(--text-base);
+  margin: 0;
+}
+
+.photo-card-dimensions {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Progress Message */
+.progress-message {
+  text-align: center;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+  margin-bottom: var(--space-3);
+}

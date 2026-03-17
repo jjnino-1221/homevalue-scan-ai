@@ -202,11 +202,8 @@
       photoCount: photos.length
     });
 
-    // TODO: In production, this would send data to backend API
-    alert('✓ Valuation request submitted!\n\nThis is a demo - in production, photos would be sent to the server for processing.');
-
-    // Navigate to success page (or home)
-    navigateTo('index.html');
+    // Navigate to results page
+    navigateTo('results.html');
   }
 
   // Initialize when DOM ready

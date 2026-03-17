@@ -269,6 +269,85 @@ const RecommendationEngine = (function() {
     };
   }
 
+  /**
+   * Analyze bathroom condition
+   */
+  function analyzeBathroom(propertyData, sqft, state, city) {
+    const bathroomYear = parseInt(propertyData.bathroomYear) || 0;
+    const bathroomCondition = propertyData.bathroomCondition || '';
+    const currentYear = getCurrentYear();
+    const bathroomAge = bathroomYear > 0 ? currentYear - bathroomYear : 0;
+
+    // Skip if bathroom is recent (< 10 years) and good condition
+    if (bathroomAge < 10 && bathroomCondition !== 'Poor' && bathroomCondition !== 'Fair') {
+      return null;
+    }
+
+    // Age factor
+    let ageFactor = 0;
+    if (bathroomAge >= 25 || bathroomYear < 2000) ageFactor = 85;
+    else if (bathroomAge >= 15 || bathroomYear < 2010) ageFactor = 55;
+    else ageFactor = 25;
+
+    // Condition factor
+    let conditionFactor = 50;
+    if (bathroomCondition === 'Poor') conditionFactor = 100;
+    else if (bathroomCondition === 'Fair') conditionFactor = 60;
+    else if (bathroomCondition === 'Good') conditionFactor = 30;
+    else conditionFactor = Math.min(bathroomAge * 3, 100);
+
+    // ROI factor
+    const roiFactor = 75; // Bathroom typically 70-80% ROI
+
+    // Market factor
+    const marketFactors = {
+      'CA': 85, 'NY': 82, 'MI': 75, 'TX': 75, 'DEFAULT': 78
+    };
+    const marketFactor = marketFactors[state] || marketFactors.DEFAULT;
+
+    // Calculate priority score
+    const priorityScore = calculatePriorityScore(ageFactor, conditionFactor, roiFactor, marketFactor);
+    const priority = getPriorityCategory(priorityScore);
+
+    // Determine scope
+    const isFullRemodel = bathroomCondition === 'Poor' || bathroomYear < 2000;
+
+    // Calculate cost
+    let costLow, costHigh;
+    if (isFullRemodel) {
+      costLow = 15000;
+      costHigh = 25000;
+    } else {
+      costLow = 8000;
+      costHigh = 15000;
+    }
+
+    // Calculate value increase
+    const roiMultiplier = (ROI_MULTIPLIERS[state] || ROI_MULTIPLIERS.DEFAULT).bathroom;
+    const valueLow = Math.round(costLow * roiMultiplier * 0.95);
+    const valueHigh = Math.round(costHigh * roiMultiplier * 1.05);
+
+    // ROI percentage
+    const roiLow = Math.round((valueLow / costHigh) * 100);
+    const roiHigh = Math.round((valueHigh / costLow) * 100);
+
+    return {
+      id: 'bathroom-update',
+      title: isFullRemodel ? 'Bathroom Remodel' : 'Bathroom Update',
+      description: isFullRemodel
+        ? `Your bathroom hasn't been updated since ${bathroomYear || 'the original build'} and needs modernization. Updated fixtures and finishes will greatly improve appeal.`
+        : `Your bathroom could use refreshing. Updating fixtures, lighting, and finishes will modernize the space and appeal to buyers.`,
+      priority: priority,
+      priorityScore: priorityScore,
+      icon: '🚿',
+      costRange: { low: costLow, high: costHigh },
+      valueIncrease: { low: valueLow, high: valueHigh },
+      roi: { low: roiLow, high: roiHigh },
+      insight: `Modern bathroom fixtures are a top priority for buyers in ${city || 'your area'}`,
+      confidence: bathroomYear > 0 ? 86 : 72
+    };
+  }
+
   // Public API placeholder
   return {
     generateRecommendations: function() {},

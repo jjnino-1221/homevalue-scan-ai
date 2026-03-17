@@ -24,6 +24,15 @@
       cameraInitialized = true;
       console.log('✓ Camera initialized');
       hideError();
+
+      // Initialize quality analyzer
+      const qualityReady = await QualityAnalyzer.init();
+      if (qualityReady) {
+        // Start real-time quality analysis
+        QualityAnalyzer.startAnalysis(videoElement, updateQualityFeedback);
+      } else {
+        console.warn('Quality analysis not available');
+      }
     } else {
       cameraInitialized = false;
       console.error('Camera failed:', result.message);

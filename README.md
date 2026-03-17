@@ -1,6 +1,6 @@
 # Mobile Valuation
 
-![Status](https://img.shields.io/badge/status-phase%204%20complete-success)
+![Status](https://img.shields.io/badge/status-phase%205%20complete-success)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen)
 
 A mobile-first property valuation platform that enables homeowners and real estate agents to capture property data via smartphone and receive instant, lending-grade valuations.
@@ -15,7 +15,7 @@ Build a working prototype demonstrating the complete user experience of mobile p
 
 ---
 
-## 🚀 Current Status: Phase 4 Complete - PROTOTYPE READY
+## 🚀 Current Status: Phase 5 Complete - DEMO READY
 
 ### ✅ Completed
 
@@ -50,7 +50,7 @@ Build a working prototype demonstrating the complete user experience of mobile p
 - Complete CSS styling for camera UI
 - Comprehensive testing checklist
 
-**Phase 4: Results & Polish**
+**Phase 4: Results & Valuation**
 - Results page with loading animation
 - Mock valuation engine (AVM)
 - Property value estimation with confidence range
@@ -59,6 +59,20 @@ Build a working prototype demonstrating the complete user experience of mobile p
 - Call-to-action buttons (Get Report, Start New)
 - Complete CSS styling for results page
 - End-to-end user journey complete
+
+**Phase 5: Demo Simplification & Property Verification**
+- Simplified address entry with mock geolocation (662 Woodward Ave, Detroit MI)
+- Removed Google Maps API dependency for demo reliability
+- Property verification questionnaire (4-screen wizard)
+- TurboTax-style "Public records say..." verification pattern
+- Screen 1: Property type, year built, sqft, lot size
+- Screen 2: Bedrooms, bathrooms, garage, basement
+- Screen 3: HVAC/Roof/Kitchen/Bathroom features with age fields
+- Screen 4: Recent changes checklist
+- Complete wizard navigation with progress tracking
+- Correct/Update button interaction logic
+- localStorage persistence for verification data
+
 ### 📋 Phase Progress
 - [x] **Phase 1:** Foundation & Landing Page ✅ **COMPLETE**
 - [x] **Phase 2:** Forms & Data Flow ✅ **COMPLETE**
@@ -71,13 +85,20 @@ Build a working prototype demonstrating the complete user experience of mobile p
   - [x] Photo review and retake
   - [x] File upload fallback
   - [x] Complete UI styling
-- [x] **Phase 4:** Results & Polish ✅ **COMPLETE**
+- [x] **Phase 4:** Results & Valuation ✅ **COMPLETE**
   - [x] Results page with loading animation
   - [x] Mock valuation engine (AVM calculations)
   - [x] Property value display with confidence
   - [x] Room dimensions and comparables
   - [x] Call-to-action buttons
   - [x] Complete results page styling
+- [x] **Phase 5:** Demo Simplification & Verification ✅ **COMPLETE**
+  - [x] Simplified address entry (mock geolocation)
+  - [x] Property verification questionnaire
+  - [x] 4-screen TurboTax-style wizard
+  - [x] Correct/Update interaction pattern
+  - [x] Progress tracking and navigation
+  - [x] Complete wizard styling
 
 **Target Completion:** December 2026 (flexible, learn-by-doing pace)
 
@@ -98,29 +119,45 @@ This project aims to revolutionize the property appraisal process by:
 
 ## Tech Stack
 
-- **Frontend:** Vanilla HTML/CSS/JavaScript (Phase 1-3), React + PWA (Phase 4+)
+- **Frontend:** Vanilla HTML/CSS/JavaScript (Phase 1-5), React + PWA (Phase 6+)
 - **Mobile:**
   - MediaDevices API (camera access)
   - Canvas API (photo capture)
-  - Geolocation API
+  - Geolocation API (mock for demo)
   - Responsive design
 - **APIs:**
-  - Google Places API (address autocomplete)
-  - Google Geocoding API (coordinates to address)
-  - Browser Geolocation API
+  - Mock geolocation (demo mode)
   - Browser MediaDevices API
+  - Google Places API (deferred to production)
+  - Google Geocoding API (deferred to production)
 - **AI/ML:**
   - TensorFlow.js 4.11.0
   - MobileNet 2.1.0 (computer vision for quality analysis)
 - **Storage:** localStorage (client-side persistence with compression)
-- **Backend:** Node.js/Express (Phase 4+)
-- **Valuation:** AVM API integration (TBD)
+- **Backend:** Node.js/Express (Phase 6+)
+- **Valuation:** Mock AVM (Phase 5), real AVM API integration (Phase 6+)
 
 ## Status
 
 ✅ **Phase 1 Complete** - Landing page built and tested
 ✅ **Phase 2 Complete** - Address entry and instructions built
 ✅ **Phase 3 Complete** - Camera capture and photo review built
+✅ **Phase 4 Complete** - Results and valuation page built
+✅ **Phase 5 Complete** - Demo simplification and property verification built
+
+## Current User Flow
+
+1. **Landing Page** - Introduction and "Get Started"
+2. **Address Entry** - Mock geolocation (662 Woodward Ave, Detroit MI)
+3. **Property Verification** - 4-screen TurboTax-style wizard
+   - Screen 1: Property basics (type, year, sqft, lot size)
+   - Screen 2: Room details (bedrooms, bathrooms, garage, basement)
+   - Screen 3: Feature conditions (HVAC age, roof age, kitchen/bathroom updates)
+   - Screen 4: Recent changes (renovations, additions, repairs)
+4. **Photo Instructions** - Guide for capturing 5 room photos
+5. **Camera Capture** - Take photos of 5 rooms with quality feedback
+6. **Photo Review** - Review and retake if needed
+7. **Results** - View property valuation with comparables
 
 ## Phase 3 Features
 
@@ -168,7 +205,11 @@ This project aims to revolutionize the property appraisal process by:
 
 ## Architecture
 
-### JavaScript Modules (Phase 3)
+### JavaScript Modules
+- **utils.js** - Shared utilities (navigation, storage, validation)
+- **main.js** - Page initialization and resume detection
+- **address-simple.js** - Mock geolocation (Phase 5)
+- **property-verification.js** - Property verification wizard (Phase 5)
 - **camera.js** - MediaDevices API wrapper for camera access
 - **photo-storage.js** - localStorage persistence with compression
 - **quality-analyzer.js** - TensorFlow.js integration for quality feedback
@@ -176,34 +217,37 @@ This project aims to revolutionize the property appraisal process by:
 - **capture-controller.js** - Room navigation state machine
 - **capture-main.js** - Main orchestration for capture flow
 - **review-page.js** - Photo grid display and retake functionality
+- **valuation-engine.js** - Mock AVM calculations (Phase 4)
+- **results-page.js** - Results display with loading animation (Phase 4)
 
 ### Data Flow
-1. User enters address (Phase 2)
-2. User reviews photo instructions (Phase 2)
-3. User grants camera permission (Phase 3)
-4. For each of 5 rooms:
+1. User clicks "Get Started" (Phase 1)
+2. User clicks "Use My Location" → Mock geolocation returns 662 Woodward Ave (Phase 5)
+3. User verifies property details in 4-screen wizard (Phase 5)
+4. User reviews photo instructions (Phase 2)
+5. User grants camera permission (Phase 3)
+6. For each of 5 rooms:
    - Camera initializes with quality feedback
    - User frames shot with corner guides
    - Quality analyzer provides real-time warnings
    - User captures photo
    - LiDAR scanner generates dimensions
    - Photo compressed and saved to localStorage
-5. User reviews all photos
-6. User can retake any photo
-7. User submits valuation request
+7. User reviews all photos (Phase 3)
+8. User can retake any photo (Phase 3)
+9. User submits valuation request (Phase 3)
+10. Results page shows loading animation → Displays valuation (Phase 4)
 
 ## Getting Started
 
 ### Prerequisites
 - Modern web browser (Chrome 90+, Safari 14+, Firefox 88+, Edge 90+)
-- Google API key (for Places and Geocoding APIs)
 - Camera access (or ability to upload photos)
 
 ### Setup
 1. Clone the repository
-2. Add your Google API key to `address.html` (replace `YOUR_API_KEY`)
-3. Open `index.html` in your browser
-4. Navigate through the flow: Landing → Address → Instructions → Capture → Review
+2. Open `index.html` in your browser
+3. Navigate through the flow: Landing → Address → Verification → Instructions → Capture → Review → Results
 
 ### Testing
 See `docs/TESTING_CHECKLIST.md` for comprehensive Phase 3 testing guide.
@@ -212,38 +256,48 @@ See `docs/TESTING_CHECKLIST.md` for comprehensive Phase 3 testing guide.
 
 ```
 mobile-valuation/
-├── index.html              # Landing page
-├── address.html            # Address entry
-├── instructions.html       # Photo instructions
-├── capture.html            # Camera capture (NEW)
-├── review.html             # Photo review (NEW)
+├── index.html                  # Landing page
+├── address.html                # Address entry (simplified for demo)
+├── property-verification.html  # Property verification wizard (NEW - Phase 5)
+├── instructions.html           # Photo instructions
+├── capture.html                # Camera capture
+├── review.html                 # Photo review
+├── results.html                # Valuation results (NEW - Phase 4)
 ├── css/
-│   ├── main.css           # Design system
-│   ├── components.css     # Reusable components + camera UI (NEW)
-│   └── pages.css          # Page-specific styles
+│   ├── main.css               # Design system
+│   ├── components.css         # Reusable components + camera UI + results + wizard
+│   └── pages.css              # Page-specific styles
 ├── js/
-│   ├── utils.js           # Utility functions
-│   ├── main.js            # Page initialization
-│   ├── camera.js          # Camera module (NEW)
-│   ├── photo-storage.js   # Storage module (NEW)
-│   ├── quality-analyzer.js # TensorFlow.js module (NEW)
-│   ├── lidar-scanner.js   # LiDAR mock module (NEW)
-│   ├── capture-controller.js # Navigation state machine (NEW)
-│   ├── capture-main.js    # Capture orchestration (NEW)
-│   └── review-page.js     # Review page logic (NEW)
+│   ├── utils.js               # Utility functions
+│   ├── main.js                # Page initialization
+│   ├── address-simple.js      # Mock geolocation (NEW - Phase 5)
+│   ├── property-verification.js # Verification wizard (NEW - Phase 5)
+│   ├── camera.js              # Camera module
+│   ├── photo-storage.js       # Storage module
+│   ├── quality-analyzer.js    # TensorFlow.js module
+│   ├── lidar-scanner.js       # LiDAR mock module
+│   ├── capture-controller.js  # Navigation state machine
+│   ├── capture-main.js        # Capture orchestration
+│   ├── review-page.js         # Review page logic
+│   ├── valuation-engine.js    # Mock AVM (NEW - Phase 4)
+│   └── results-page.js        # Results page logic (NEW - Phase 4)
 └── docs/
-    ├── TESTING_CHECKLIST.md        # Phase 3 testing (NEW)
+    ├── TESTING_CHECKLIST.md
+    ├── BUG_FIX_ADDRESS_ENTRY.md
     ├── phase-2-testing-checklist.md
     └── superpowers/
         ├── specs/
-        │   └── 2026-03-16-phase-3-camera-capture-design.md
+        │   ├── 2026-03-16-phase-3-camera-capture-design.md
+        │   └── 2026-03-17-phase-5-demo-simplification.md
         └── plans/
-            └── 2026-03-16-phase-3-camera-capture.md
+            ├── 2026-03-16-phase-3-camera-capture.md
+            └── 2026-03-17-phase-5-demo-simplification.md
 ```
 
 ## Performance
 
 - **Page load:** < 2 seconds on 4G
+- **Mock geolocation:** ~800ms (realistic feel)
 - **Camera start:** < 1 second after permission
 - **Quality analysis:** 2fps (500ms interval)
 - **Photo capture:** < 3 seconds (including LiDAR)

@@ -53,6 +53,7 @@ function showResumeModal(address, step) {
   onClick('#resume-continue', () => {
     const pageMap = {
       'address': 'address.html',
+      'verification': 'property-verification.html', // Phase 5
       'instructions': 'instructions.html',
       'capture': 'capture.html' // Phase 3
     }

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Valuation - Mobile Valuation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Loading State (hidden after load) -->
+    <div id="loading-state" class="loading-state">
+      <div class="loading-content">
+        <h2>Analyzing Your Property...</h2>
+        <div class="loading-steps">
+          <div class="loading-step" data-step="1">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Processing photos</span>
+          </div>
+          <div class="loading-step" data-step="2">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Calculating dimensions</span>
+          </div>
+          <div class="loading-step" data-step="3">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Comparing nearby homes</span>
+          </div>
+          <div class="loading-step" data-step="4">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Generating estimate</span>
+          </div>
+        </div>
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+
+    <!-- Results Content (hidden until loaded) -->
+    <div id="results-content" class="results-content" style="display: none;">
+      <!-- Navigation -->
+      <nav class="page-nav">
+        <a href="index.html" class="nav-back">← Home</a>
+      </nav>
+
+      <!-- Main Results -->
+      <main>
+        <h1>🏡 Your Property Valuation</h1>
+
+        <!-- Value Card -->
+        <div class="value-card">
+          <div class="value-label">Estimated Value</div>
+          <div class="value-range">
+            <span id="value-low">$—</span>
+            <span class="value-separator">—</span>
+            <span id="value-high">$—</span>
+          </div>
+          <div class="value-primary">
+            Most Likely: <span id="value-estimate">$—</span>
+          </div>
+          <div class="value-confidence">
+            Confidence: <span id="confidence-level">—%</span>
+          </div>
+        </div>
+
+        <!-- Property Details -->
+        <div class="results-section">
+          <h2>Property Details</h2>
+          <div class="property-details">
+            <div class="detail-item">
+              <span class="detail-icon">📍</span>
+              <div class="detail-content">
+                <div class="detail-label">Address</div>
+                <div class="detail-value" id="property-address">—</div>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">📐</span>
+              <div class="detail-content">
+                <div class="detail-label">Total Square Footage</div>
+                <div class="detail-value" id="total-sqft">— sq ft</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Dimensions -->
+        <div class="results-section">
+          <h2>Room Dimensions</h2>
+          <div id="room-dimensions" class="room-dimensions">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Comparable Properties -->
+        <div class="results-section">
+          <h2>Comparable Properties</h2>
+          <div id="comparables" class="comparables-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+          <button type="button" id="get-report" class="button button-primary button-full">
+            📄 Get Full Report
+          </button>
+          <button type="button" id="start-new" class="button button-secondary button-full">
+            🔄 Start Another Valuation
+          </button>
+        </div>
+
+        <!-- Disclaimer -->
+        <p class="disclaimer">
+          This is a preliminary estimate for demonstration purposes. Actual property value may vary.
+          For lending-grade valuations, please contact a licensed appraiser.
+        </p>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/photo-storage.js"></script>
+  <script src="js/valuation-engine.js"></script>
+  <script src="js/results-page.js"></script>
+</body>
+</html>

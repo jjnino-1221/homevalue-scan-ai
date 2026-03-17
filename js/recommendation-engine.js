@@ -68,6 +68,68 @@ const RecommendationEngine = (function() {
     return new Date().getFullYear();
   }
 
+  /**
+   * Analyze HVAC system
+   */
+  function analyzeHVAC(propertyData, sqft, state) {
+    const hvacAge = parseInt(propertyData.hvacAge) || 0;
+
+    // Skip if HVAC is less than 12 years old
+    if (hvacAge < 12) return null;
+
+    // Age factor (0-100)
+    let ageFactor = 0;
+    if (hvacAge >= 20) ageFactor = 100;
+    else if (hvacAge >= 15) ageFactor = 75;
+    else ageFactor = 50;
+
+    // Condition factor (assume fair if age-based)
+    const conditionFactor = Math.min(hvacAge * 4, 100);
+
+    // ROI factor
+    const roiFactor = 65; // HVAC typically 60-70% ROI
+
+    // Market factor (HVAC is important in hot/cold climates)
+    const marketFactors = {
+      'TX': 95, 'FL': 95, 'CA': 70, 'MI': 80, 'DEFAULT': 75
+    };
+    const marketFactor = marketFactors[state] || marketFactors.DEFAULT;
+
+    // Calculate priority score
+    const priorityScore = calculatePriorityScore(ageFactor, conditionFactor, roiFactor, marketFactor);
+    const priority = getPriorityCategory(priorityScore);
+
+    // Calculate cost (base + size adjustment)
+    const baseCost = 5000;
+    const costPerSqft = 2; // $2 per sqft
+    const totalCost = baseCost + (sqft * costPerSqft);
+    const costLow = Math.round(totalCost * 0.9);
+    const costHigh = Math.round(totalCost * 1.3);
+
+    // Calculate value increase (cost × ROI multiplier)
+    const roiMultiplier = (ROI_MULTIPLIERS[state] || ROI_MULTIPLIERS.DEFAULT).hvac;
+    const valueLow = Math.round(costLow * roiMultiplier * 0.9);
+    const valueHigh = Math.round(costHigh * roiMultiplier * 1.1);
+
+    // ROI percentage
+    const roiLow = Math.round((valueLow / costHigh) * 100);
+    const roiHigh = Math.round((valueHigh / costLow) * 100);
+
+    return {
+      id: 'hvac-replacement',
+      title: 'Replace HVAC System',
+      description: `Your ${hvacAge}-year-old ${propertyData.hvacType || 'HVAC'} system is ${hvacAge >= 20 ? 'past its typical lifespan' : 'aging'}. Replacing it with an energy-efficient system will improve comfort and reduce utility costs.`,
+      priority: priority,
+      priorityScore: priorityScore,
+      icon: '❄️',
+      costRange: { low: costLow, high: costHigh },
+      valueIncrease: { low: valueLow, high: valueHigh },
+      roi: { low: roiLow, high: roiHigh },
+      insight: 'Energy-efficient HVAC can reduce utility costs by $800-1,200/year',
+      confidence: hvacAge > 0 ? 92 : 70
+    };
+  }
+
   // Public API placeholder
   return {
     generateRecommendations: function() {},

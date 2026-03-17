@@ -56,6 +56,26 @@
   }
 
   /**
+   * Update quality feedback overlay
+   */
+  function updateQualityFeedback(quality) {
+    const overlay = document.getElementById('quality-overlay');
+    const message = document.getElementById('quality-message');
+
+    if (quality.status === 'good') {
+      overlay.className = 'quality-overlay quality-good';
+      message.textContent = quality.message;
+    } else if (quality.status === 'warning') {
+      overlay.className = 'quality-overlay quality-warning';
+      message.textContent = quality.message;
+    } else {
+      // Unknown or error
+      overlay.className = 'quality-overlay';
+      message.textContent = '';
+    }
+  }
+
+  /**
    * Set up event handlers
    */
   function setupEventHandlers() {
@@ -166,6 +186,7 @@
     } else {
       // All rooms complete, go to review page
       console.log('✓ All photos captured');
+      QualityAnalyzer.stopAnalysis();
       Camera.stop();
       navigateTo('review.html');
     }
@@ -181,6 +202,7 @@
       updateUI(prevRoom);
     } else {
       // At first room, go back to instructions
+      QualityAnalyzer.stopAnalysis();
       Camera.stop();
       navigateTo('instructions.html');
     }
@@ -258,6 +280,7 @@
    */
   window.addEventListener('beforeunload', () => {
     if (cameraInitialized) {
+      QualityAnalyzer.stopAnalysis();
       Camera.stop();
     }
   });

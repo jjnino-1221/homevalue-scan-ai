@@ -1383,3 +1383,53 @@
     flex: 1;
   }
 }
+
+/* ===== ADDRESS DISPLAY (DEMO MODE) ===== */
+
+.address-display {
+  margin: var(--space-4) 0;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.address-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: #E8F5E9;
+  border: 2px solid var(--success-green);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.address-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--success-green);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+}
+
+.address-content {
+  flex: 1;
+}
+
+.address-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  font-weight: var(--weight-medium);
+}
+
+.address-value {
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  font-weight: var(--weight-bold);
+}

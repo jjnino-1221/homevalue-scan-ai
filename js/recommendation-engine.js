@@ -348,6 +348,122 @@ const RecommendationEngine = (function() {
     };
   }
 
+  /**
+   * Analyze exterior condition
+   */
+  function analyzeExterior(propertyData, sqft, state) {
+    const yearBuilt = parseInt(propertyData.yearBuilt) || 0;
+    const currentYear = getCurrentYear();
+    const propertyAge = yearBuilt > 0 ? currentYear - yearBuilt : 0;
+    const recentChanges = propertyData.changes || [];
+
+    // Skip if property is < 30 years old or has recent exterior changes
+    if (propertyAge < 30) return null;
+    if (recentChanges.includes('Exterior painting/siding')) return null;
+
+    // Age factor
+    const ageFactor = Math.min(propertyAge * 2, 100);
+
+    // Condition factor (assume fair for older properties)
+    const conditionFactor = 50;
+
+    // ROI factor
+    const roiFactor = 70; // Exterior typically 65-75% ROI
+
+    // Market factor
+    const marketFactor = 80; // Curb appeal important everywhere
+
+    // Calculate priority score
+    const priorityScore = calculatePriorityScore(ageFactor, conditionFactor, roiFactor, marketFactor);
+    const priority = getPriorityCategory(priorityScore);
+
+    // Calculate cost
+    const costLow = 5000;
+    const costHigh = 12000;
+
+    // Calculate value increase
+    const roiMultiplier = (ROI_MULTIPLIERS[state] || ROI_MULTIPLIERS.DEFAULT).exterior;
+    const valueLow = Math.round(costLow * roiMultiplier);
+    const valueHigh = Math.round(costHigh * roiMultiplier);
+
+    // ROI percentage
+    const roiLow = Math.round((valueLow / costHigh) * 100);
+    const roiHigh = Math.round((valueHigh / costLow) * 100);
+
+    return {
+      id: 'exterior-improvements',
+      title: 'Exterior Improvements',
+      description: `Your property's exterior could benefit from updates. Fresh paint, new siding, and improved landscaping will create strong curb appeal and attract more buyers.`,
+      priority: priority,
+      priorityScore: priorityScore,
+      icon: '🏡',
+      costRange: { low: costLow, high: costHigh },
+      valueIncrease: { low: valueLow, high: valueHigh },
+      roi: { low: roiLow, high: roiHigh },
+      insight: 'Curb appeal creates strong first impressions and attracts more buyers',
+      confidence: 78
+    };
+  }
+
+  /**
+   * Analyze energy efficiency opportunities
+   */
+  function analyzeEnergy(propertyData, sqft, state) {
+    const hvacAge = parseInt(propertyData.hvacAge) || 0;
+    const yearBuilt = parseInt(propertyData.yearBuilt) || 0;
+    const currentYear = getCurrentYear();
+    const propertyAge = yearBuilt > 0 ? currentYear - yearBuilt : 0;
+
+    // Only recommend if HVAC > 10 years OR property built before 2000
+    if (hvacAge < 10 && yearBuilt >= 2000) return null;
+
+    // Age factor
+    const ageFactor = Math.max(hvacAge * 3, propertyAge * 1.5);
+
+    // Condition factor
+    const conditionFactor = 50;
+
+    // ROI factor
+    const roiFactor = 58; // Energy typically 50-60% ROI
+
+    // Market factor
+    const marketFactors = {
+      'CA': 85, 'NY': 80, 'WA': 80, 'DEFAULT': 70
+    };
+    const marketFactor = marketFactors[state] || marketFactors.DEFAULT;
+
+    // Calculate priority score
+    const priorityScore = calculatePriorityScore(ageFactor, conditionFactor, roiFactor, marketFactor);
+    const priority = getPriorityCategory(priorityScore);
+
+    // Calculate cost
+    const costLow = 3000;
+    const costHigh = 8000;
+
+    // Calculate value increase (includes utility savings)
+    const roiMultiplier = (ROI_MULTIPLIERS[state] || ROI_MULTIPLIERS.DEFAULT).energy;
+    const valueLow = Math.round(costLow * roiMultiplier);
+    const valueHigh = Math.round(costHigh * roiMultiplier);
+
+    // ROI percentage
+    const roiLow = Math.round((valueLow / costHigh) * 100);
+    const roiHigh = Math.round((valueHigh / costLow) * 100);
+
+    return {
+      id: 'energy-efficiency',
+      title: 'Energy Efficiency Upgrades',
+      description: `Improving your home's energy efficiency through better insulation, modern windows, and a smart thermostat will reduce utility costs and appeal to eco-conscious buyers.`,
+      priority: priority,
+      priorityScore: priorityScore,
+      icon: '⚡',
+      costRange: { low: costLow, high: costHigh },
+      valueIncrease: { low: valueLow, high: valueHigh },
+      roi: { low: roiLow, high: roiHigh },
+      insight: 'Energy-efficient homes qualify for better financing and lower insurance rates',
+      confidence: 82
+    };
+  }
+
   // Public API placeholder
   return {
     generateRecommendations: function() {},

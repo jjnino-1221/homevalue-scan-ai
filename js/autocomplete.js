@@ -10,8 +10,12 @@ let autocompleteInstance = null
 function initAutocomplete() {
   const input = document.getElementById('address-input')
 
-  if (!window.google || !window.google.maps) {
-    console.error('Google Maps not loaded')
+  // Ensure input is always usable
+  input.disabled = false
+  input.readOnly = false
+
+  if (!window.google || !window.google.maps || !window.google.maps.places) {
+    console.warn('Google Maps Places API not loaded - using manual entry fallback')
     showAPIFallbackMessage()
     setupManualEntry()
     return
@@ -26,6 +30,9 @@ function initAutocomplete() {
 
     // Listen for place selection
     autocompleteInstance.addListener('place_changed', handlePlaceSelected)
+
+    // Also setup manual entry as fallback
+    setupManualEntry()
 
     console.log('✓ Autocomplete initialized')
   } catch (error) {
@@ -104,14 +111,27 @@ function parseGooglePlace(place) {
 function setupManualEntry() {
   const input = document.getElementById('address-input')
 
+  // Remove any existing listeners to avoid duplicates
+  const newInput = input.cloneNode(true)
+  input.parentNode.replaceChild(newInput, input)
+
+  const freshInput = document.getElementById('address-input')
+
+  // Ensure input is fully enabled
+  freshInput.disabled = false
+  freshInput.readOnly = false
+  freshInput.style.pointerEvents = 'auto'
+
   // Debounce input for validation
   let debounceTimeout
-  input.addEventListener('input', () => {
+  freshInput.addEventListener('input', () => {
     clearTimeout(debounceTimeout)
     debounceTimeout = setTimeout(() => {
-      validateManualInput(input.value)
+      validateManualInput(freshInput.value)
     }, 500)
   })
+
+  console.log('✓ Manual entry enabled')
 }
 
 /**
@@ -185,18 +205,27 @@ function parseManualAddress(text) {
  * Show API fallback message
  */
 function showAPIFallbackMessage() {
+  // Check if message already exists
+  if (document.querySelector('.warning-banner')) {
+    return
+  }
+
   const warningHTML = `
-    <div class="warning-banner">
-      <span class="warning-icon">💡</span>
+    <div class="warning-banner" style="background: #FFF3CD; border: 1px solid #FFC107; border-radius: 8px; padding: 16px; margin-bottom: 16px; display: flex; gap: 12px;">
+      <span class="warning-icon" style="font-size: 24px;">💡</span>
       <div class="warning-content">
-        <div class="warning-title">Address suggestions unavailable</div>
-        <div class="warning-text">Please type your complete address: street, city, state, ZIP</div>
+        <div class="warning-title" style="font-weight: 600; margin-bottom: 4px;">Address suggestions unavailable</div>
+        <div class="warning-text" style="font-size: 14px; color: #666;">Please type your complete address: street, city, state, ZIP</div>
       </div>
     </div>
   `
 
   const container = document.querySelector('.page-container main')
-  container.insertAdjacentHTML('afterbegin', warningHTML)
+  const firstChild = container.firstElementChild
+  container.insertBefore(
+    document.createRange().createContextualFragment(warningHTML),
+    firstChild
+  )
 }
 
 /**

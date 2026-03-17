@@ -1,7 +1,7 @@
 # Mobile Valuation
 
-![Status](https://img.shields.io/badge/status-phase%202%20complete-success)
-![Progress](https://img.shields.io/badge/progress-50%25-blue)
+![Status](https://img.shields.io/badge/status-phase%203%20complete-success)
+![Progress](https://img.shields.io/badge/progress-75%25-blue)
 
 A mobile-first property valuation platform that enables homeowners and real estate agents to capture property data via smartphone and receive instant, lending-grade valuations.
 
@@ -15,7 +15,7 @@ Build a working prototype demonstrating the complete user experience of mobile p
 
 ---
 
-## 🚀 Current Status: Phase 2 Complete
+## 🚀 Current Status: Phase 3 Complete
 
 ### ✅ Completed
 
@@ -35,18 +35,33 @@ Build a working prototype demonstrating the complete user experience of mobile p
 - Photo instructions page with 5 room cards
 - Modal system for location permissions
 - Comprehensive error handling
-- Testing checklist and documentation
+
+**Phase 3: Camera & Photo Capture**
+- Camera interface with MediaDevices API
+- Live camera viewfinder with framing guides
+- TensorFlow.js integration for real-time quality feedback
+- Photo capture with Canvas API
+- Image compression (progressive quality reduction)
+- localStorage persistence with QuotaExceededError recovery
+- Mock LiDAR scanning with realistic dimension generation
+- Room navigation state machine (5 rooms)
+- Photo review page with retake functionality
+- File upload fallback for camera errors
+- Complete CSS styling for camera UI
+- Comprehensive testing checklist
 
 ### 📋 Phase Progress
 - [x] **Phase 1:** Foundation & Landing Page ✅ **COMPLETE**
 - [x] **Phase 2:** Forms & Data Flow ✅ **COMPLETE**
-  - [x] Address entry with geolocation
-  - [x] Google Places Autocomplete
-  - [x] Form validation and error handling
-  - [x] Data persistence (localStorage)
-  - [x] Resume detection
-  - [x] Photo instructions page
-- [ ] **Phase 3:** Camera & Photo Capture
+- [x] **Phase 3:** Camera & Photo Capture ✅ **COMPLETE**
+  - [x] Camera initialization with MediaDevices API
+  - [x] Real-time quality feedback (TensorFlow.js)
+  - [x] Photo capture and compression
+  - [x] Mock LiDAR scanning
+  - [x] Room navigation (5 rooms)
+  - [x] Photo review and retake
+  - [x] File upload fallback
+  - [x] Complete UI styling
 - [ ] **Phase 4:** Results & Polish
 
 **Target Completion:** December 2026 (flexible, learn-by-doing pace)
@@ -68,50 +83,164 @@ This project aims to revolutionize the property appraisal process by:
 
 ## Tech Stack
 
-- **Frontend:** Vanilla HTML/CSS/JavaScript (Phase 1-2), React + PWA (Phase 3+)
-- **Mobile:** Camera API, Geolocation, responsive design
+- **Frontend:** Vanilla HTML/CSS/JavaScript (Phase 1-3), React + PWA (Phase 4+)
+- **Mobile:**
+  - MediaDevices API (camera access)
+  - Canvas API (photo capture)
+  - Geolocation API
+  - Responsive design
 - **APIs:**
   - Google Places API (address autocomplete)
   - Google Geocoding API (coordinates to address)
   - Browser Geolocation API
-- **Storage:** localStorage (client-side persistence)
-- **Backend:** Node.js/Express (Phase 3+)
-- **AI/ML:** Computer vision for property feature detection
+  - Browser MediaDevices API
+- **AI/ML:**
+  - TensorFlow.js 4.11.0
+  - MobileNet 2.1.0 (computer vision for quality analysis)
+- **Storage:** localStorage (client-side persistence with compression)
+- **Backend:** Node.js/Express (Phase 4+)
 - **Valuation:** AVM API integration (TBD)
 
 ## Status
 
 ✅ **Phase 1 Complete** - Landing page built and tested
 ✅ **Phase 2 Complete** - Address entry and instructions built
+✅ **Phase 3 Complete** - Camera capture and photo review built
 
-## Phase 2 Features
+## Phase 3 Features
 
-### Address Entry
-- **Geolocation-first** approach with "Use My Location" button
-- **Google Places Autocomplete** for manual address entry
-- **Form validation** with clear error messages
-- **Auto-save** progress to localStorage
-- **Resume detection** for returning users
+### Camera Capture
+- **Live viewfinder** with rear-facing camera preference (mobile)
+- **Framing guides** with corner markers for consistent photo composition
+- **Real-time quality feedback** powered by TensorFlow.js
+  - Lighting analysis (too dark/too bright warnings)
+  - Sharpness detection (motion blur warnings)
+  - 2fps analysis to minimize CPU load
+- **Photo capture** with instant feedback
+- **Image compression** (progressive quality: 0.85 → 0.7 → 0.5)
+- **QuotaExceededError recovery** with user-friendly options
 
-### Photo Instructions
-- **5-room capture guide** (exterior, kitchen, living room, bedroom, bathroom)
-- **Visual instruction cards** with tips
-- **Responsive design** (mobile stacked, tablet/desktop grid)
+### LiDAR Scanner (Mock)
+- **AR-style animation** with scanning line effect
+- **Realistic dimension generation** per room type
+- **Progress indicators** with stage-by-stage feedback
+- **Room-specific ranges:**
+  - Front Exterior: 30-60' × 40-80' × 15-25'
+  - Kitchen: 10-15' × 12-18' × 8-10'
+  - Living Room: 12-20' × 15-25' × 8-10'
+  - Master Bedroom: 12-16' × 14-20' × 8-10'
+  - Master Bathroom: 8-12' × 10-15' × 8-10'
+
+### Room Navigation
+- **Sequential flow** through 5 rooms
+- **Back button** support with progress preservation
+- **Progress indicator** (e.g., "3/5")
+- **Auto-advance** to next room after capture
+- **Resume capability** - picks up where you left off
+
+### Photo Review
+- **Grid layout** (2 columns on tablet/desktop, 1 on mobile)
+- **Thumbnail display** with room names and dimensions
+- **Retake functionality** with confirmation modal
+- **Missing photo indicators** for incomplete captures
+- **Submit button** enabled only when all photos captured
+
+### Error Handling
+- **Camera permission denied** - shows file upload fallback
+- **No camera hardware** - automatic fallback to file upload
+- **Storage quota exceeded** - recovery options (delete oldest/reduce quality)
+- **TensorFlow.js load failure** - graceful degradation (no quality feedback)
+
+## Architecture
+
+### JavaScript Modules (Phase 3)
+- **camera.js** - MediaDevices API wrapper for camera access
+- **photo-storage.js** - localStorage persistence with compression
+- **quality-analyzer.js** - TensorFlow.js integration for quality feedback
+- **lidar-scanner.js** - Mock LiDAR scanning with animations
+- **capture-controller.js** - Room navigation state machine
+- **capture-main.js** - Main orchestration for capture flow
+- **review-page.js** - Photo grid display and retake functionality
+
+### Data Flow
+1. User enters address (Phase 2)
+2. User reviews photo instructions (Phase 2)
+3. User grants camera permission (Phase 3)
+4. For each of 5 rooms:
+   - Camera initializes with quality feedback
+   - User frames shot with corner guides
+   - Quality analyzer provides real-time warnings
+   - User captures photo
+   - LiDAR scanner generates dimensions
+   - Photo compressed and saved to localStorage
+5. User reviews all photos
+6. User can retake any photo
+7. User submits valuation request
 
 ## Getting Started
 
 ### Prerequisites
-- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Modern web browser (Chrome 90+, Safari 14+, Firefox 88+, Edge 90+)
 - Google API key (for Places and Geocoding APIs)
+- Camera access (or ability to upload photos)
 
 ### Setup
 1. Clone the repository
 2. Add your Google API key to `address.html` (replace `YOUR_API_KEY`)
 3. Open `index.html` in your browser
-4. Navigate through the flow: Landing → Address → Instructions
+4. Navigate through the flow: Landing → Address → Instructions → Capture → Review
 
 ### Testing
-See `docs/phase-2-testing-checklist.md` for comprehensive testing guide.
+See `docs/TESTING_CHECKLIST.md` for comprehensive Phase 3 testing guide.
+
+## File Structure
+
+```
+mobile-valuation/
+├── index.html              # Landing page
+├── address.html            # Address entry
+├── instructions.html       # Photo instructions
+├── capture.html            # Camera capture (NEW)
+├── review.html             # Photo review (NEW)
+├── css/
+│   ├── main.css           # Design system
+│   ├── components.css     # Reusable components + camera UI (NEW)
+│   └── pages.css          # Page-specific styles
+├── js/
+│   ├── utils.js           # Utility functions
+│   ├── main.js            # Page initialization
+│   ├── camera.js          # Camera module (NEW)
+│   ├── photo-storage.js   # Storage module (NEW)
+│   ├── quality-analyzer.js # TensorFlow.js module (NEW)
+│   ├── lidar-scanner.js   # LiDAR mock module (NEW)
+│   ├── capture-controller.js # Navigation state machine (NEW)
+│   ├── capture-main.js    # Capture orchestration (NEW)
+│   └── review-page.js     # Review page logic (NEW)
+└── docs/
+    ├── TESTING_CHECKLIST.md        # Phase 3 testing (NEW)
+    ├── phase-2-testing-checklist.md
+    └── superpowers/
+        ├── specs/
+        │   └── 2026-03-16-phase-3-camera-capture-design.md
+        └── plans/
+            └── 2026-03-16-phase-3-camera-capture.md
+```
+
+## Performance
+
+- **Page load:** < 2 seconds on 4G
+- **Camera start:** < 1 second after permission
+- **Quality analysis:** 2fps (500ms interval)
+- **Photo capture:** < 3 seconds (including LiDAR)
+- **LiDAR scan:** ~3-4 seconds
+- **Photo size:** Target 1MB per photo (5MB total for 5 photos)
+
+## Browser Support
+
+- ✅ Chrome 90+
+- ✅ Safari 14+
+- ✅ Edge 90+
+- ✅ Firefox 88+
 
 ## License
 

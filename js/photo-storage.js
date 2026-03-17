@@ -41,15 +41,102 @@ const PhotoStorage = (function() {
   };
 
   /**
+   * Compress image to target size
+   * @param {string} imageData - Base64-encoded image
+   * @param {number} quality - JPEG quality (0.0 - 1.0)
+   * @returns {Promise<string>} Compressed base64 image
+   */
+  async function compressImage(imageData, quality = 0.85) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        // Convert to JPEG with specified quality
+        const compressed = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressed);
+      };
+      img.src = imageData;
+    });
+  }
+
+  /**
+   * Progressive compression until under target size
+   * @param {string} imageData - Base64-encoded image
+   * @param {number} targetMB - Target size in megabytes
+   * @returns {Promise<string>} Compressed image data
+   */
+  async function progressiveCompress(imageData, targetMB = 1.0) {
+    let compressed = imageData;
+    let currentSize = (compressed.length * 0.75) / (1024 * 1024); // Base64 to MB
+
+    // Try quality reduction first: 0.85 → 0.7 → 0.5
+    const qualities = [0.85, 0.7, 0.5];
+    for (const quality of qualities) {
+      if (currentSize <= targetMB) break;
+
+      compressed = await compressImage(imageData, quality);
+      currentSize = (compressed.length * 0.75) / (1024 * 1024);
+
+      console.log(`Compressed to ${currentSize.toFixed(2)}MB at quality ${quality}`);
+    }
+
+    // If still too large, scale dimensions down
+    if (currentSize > targetMB) {
+      compressed = await scaleImage(compressed, 0.8);
+      currentSize = (compressed.length * 0.75) / (1024 * 1024);
+      console.log(`Scaled down to ${currentSize.toFixed(2)}MB`);
+    }
+
+    return compressed;
+  }
+
+  /**
+   * Scale image dimensions
+   * @param {string} imageData - Base64-encoded image
+   * @param {number} scale - Scale factor (0.0 - 1.0)
+   * @returns {Promise<string>} Scaled image data
+   */
+  async function scaleImage(imageData, scale) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const scaled = canvas.toDataURL('image/jpeg', 0.85);
+        resolve(scaled);
+      };
+      img.src = imageData;
+    });
+  }
+
+  /**
    * Save photo to localStorage
    * @param {string} room - Room identifier
    * @param {string} imageData - Base64-encoded image
    * @param {Object} dimensions - LiDAR dimensions {width, height, depth}
-   * @returns {Object} Success status
+   * @param {number} quality - Initial JPEG quality (default 0.85)
+   * @returns {Promise<Object>} Success status
    */
-  function savePhoto(room, imageData, dimensions) {
+  async function savePhoto(room, imageData, dimensions, quality = 0.85) {
     try {
       const photos = getAllPhotos();
+
+      // Compress image before saving
+      const compressed = await progressiveCompress(imageData, 1.0);
+      const sizeMB = (compressed.length * 0.75) / (1024 * 1024);
+
+      console.log(`Final compressed size: ${sizeMB.toFixed(2)}MB`);
 
       // Remove existing photo for this room
       const filteredPhotos = photos.filter(p => p.room !== room);
@@ -57,7 +144,7 @@ const PhotoStorage = (function() {
       // Add new photo
       const photo = {
         room: room,
-        imageData: imageData,
+        imageData: compressed,
         dimensions: dimensions,
         timestamp: new Date().toISOString()
       };

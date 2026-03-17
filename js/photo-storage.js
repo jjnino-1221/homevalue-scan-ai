@@ -151,12 +151,37 @@ const PhotoStorage = (function() {
 
       filteredPhotos.push(photo);
 
-      // Save to localStorage
+      // Calculate total storage size
       const jsonValue = JSON.stringify(filteredPhotos);
-      localStorage.setItem(STORAGE_KEY, jsonValue);
+      const storageMB = (jsonValue.length * 2) / (1024 * 1024); // UTF-16 = 2 bytes per char
 
-      console.log(`✓ Photo saved for ${room}`);
-      return { success: true, photoId: room };
+      // Save to localStorage with QuotaExceededError handling
+      try {
+        localStorage.setItem(STORAGE_KEY, jsonValue);
+        console.log(`✓ Photo saved for ${room} (Total storage: ${storageMB.toFixed(2)}MB)`);
+        return { success: true, photoId: room };
+
+      } catch (storageError) {
+        if (storageError.name === 'QuotaExceededError') {
+          console.error('Storage quota exceeded:', storageMB.toFixed(2), 'MB');
+          return {
+            success: false,
+            error: 'QuotaExceededError',
+            message: 'Storage full - photos too large (' + storageMB.toFixed(1) + ' MB)',
+            recoveryOptions: {
+              deleteOldest: 'Delete oldest photo to free space',
+              reduceQuality: 'Re-compress at lower quality',
+              skipPhoto: 'Skip this photo and continue'
+            }
+          };
+        }
+
+        // Other storage errors
+        return {
+          success: false,
+          error: storageError.message
+        };
+      }
 
     } catch (error) {
       console.error('Error saving photo:', error);
@@ -165,6 +190,54 @@ const PhotoStorage = (function() {
         error: error.message
       };
     }
+  }
+
+  /**
+   * Delete oldest photo to free storage space
+   * @returns {Object} Result with deleted room ID
+   */
+  function deleteOldestPhoto() {
+    const photos = getAllPhotos();
+    if (photos.length === 0) {
+      return {
+        success: false,
+        error: 'No photos to delete'
+      };
+    }
+
+    // Sort by timestamp (oldest first)
+    const sorted = photos.sort((a, b) =>
+      new Date(a.timestamp) - new Date(b.timestamp)
+    );
+
+    const oldest = sorted[0];
+    deletePhoto(oldest.room);
+
+    return {
+      success: true,
+      deletedRoom: oldest.room,
+      roomName: ROOMS[oldest.room]?.name || oldest.room
+    };
+  }
+
+  /**
+   * Retry saving with lower quality
+   * @param {string} room - Room identifier
+   * @param {string} imageData - Base64-encoded image
+   * @param {Object} dimensions - LiDAR dimensions
+   * @param {number} quality - Reduced quality (e.g., 0.5)
+   * @returns {Promise<Object>} Save result
+   */
+  async function retryWithLowerQuality(room, imageData, dimensions, quality = 0.5) {
+    console.log(`Retrying save with quality ${quality}`);
+
+    // Compress to lower quality
+    const compressed = await compressImage(imageData, quality);
+    const sizeMB = (compressed.length * 0.75) / (1024 * 1024);
+    console.log(`Reduced to ${sizeMB.toFixed(2)}MB`);
+
+    // Try saving again
+    return savePhoto(room, compressed, dimensions, quality);
   }
 
   /**
@@ -247,6 +320,8 @@ const PhotoStorage = (function() {
     getAllPhotos,
     getPhoto,
     deletePhoto,
+    deleteOldestPhoto,
+    retryWithLowerQuality,
     clearAll,
     getCompletionStatus,
     getRoomConfig,

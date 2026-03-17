@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Property Details - Mobile Valuation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Progress Indicator -->
+    <div class="wizard-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progress-current">1</span> of <span id="progress-total">4</span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="page-nav">
+      <button type="button" id="back-button" class="nav-back">← Back</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="verification-main">
+
+      <!-- Screen 1: Basic Property Info -->
+      <div class="verification-screen" id="screen-1" data-screen="1">
+        <h1>Verify Property Details</h1>
+        <p class="subtitle">We found this information from public records. Please confirm or update.</p>
+
+        <!-- Property Type -->
+        <div class="verification-item">
+          <div class="verification-label">Property Type</div>
+          <div class="verification-public-record">
+            Public records say: <strong>Single Family</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="propertyType" data-value="Single Family">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="propertyType">
+              Update
+            </button>
+          </div>
+          <select id="propertyType" class="form-input verification-input" style="display: none;">
+            <option value="Single Family">Single Family</option>
+            <option value="Condo">Condo</option>
+            <option value="Townhouse">Townhouse</option>
+            <option value="Multi-Family">Multi-Family</option>
+          </select>
+        </div>
+
+        <!-- Year Built -->
+        <div class="verification-item">
+          <div class="verification-label">Year Built</div>
+          <div class="verification-public-record">
+            Public records say: <strong>1985</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="yearBuilt" data-value="1985">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="yearBuilt">
+              Update
+            </button>
+          </div>
+          <input type="number" id="yearBuilt" class="form-input verification-input" placeholder="Enter year" min="1800" max="2024" style="display: none;">
+        </div>
+
+        <!-- Square Footage -->
+        <div class="verification-item">
+          <div class="verification-label">Square Footage</div>
+          <div class="verification-public-record">
+            Public records say: <strong>2,140 sq ft</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="squareFootage" data-value="2140">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="squareFootage">
+              Update
+            </button>
+          </div>
+          <input type="number" id="squareFootage" class="form-input verification-input" placeholder="Enter square footage" style="display: none;">
+        </div>
+
+        <!-- Lot Size -->
+        <div class="verification-item">
+          <div class="verification-label">Lot Size</div>
+          <div class="verification-public-record">
+            Public records say: <strong>0.25 acres</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="lotSize" data-value="0.25">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="lotSize">
+              Update
+            </button>
+          </div>
+          <input type="number" id="lotSize" class="form-input verification-input" placeholder="Enter lot size (acres)" step="0.01" style="display: none;">
+        </div>
+      </div>
+
+      <!-- Screen 2: Room Counts -->
+      <div class="verification-screen" id="screen-2" data-screen="2" style="display: none;">
+        <h1>Room Counts</h1>
+        <p class="subtitle">Confirm the number of rooms in your property.</p>
+
+        <!-- Bedrooms -->
+        <div class="verification-item">
+          <div class="verification-label">Bedrooms</div>
+          <div class="verification-public-record">
+            Public records say: <strong>3 bedrooms</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="bedrooms" data-value="3">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="bedrooms">
+              Update
+            </button>
+          </div>
+          <select id="bedrooms" class="form-input verification-input" style="display: none;">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6+">6+</option>
+          </select>
+        </div>
+
+        <!-- Bathrooms -->
+        <div class="verification-item">
+          <div class="verification-label">Bathrooms</div>
+          <div class="verification-public-record">
+            Public records say: <strong>2.5 bathrooms</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="bathrooms" data-value="2.5">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="bathrooms">
+              Update
+            </button>
+          </div>
+          <select id="bathrooms" class="form-input verification-input" style="display: none;">
+            <option value="1">1</option>
+            <option value="1.5">1.5</option>
+            <option value="2">2</option>
+            <option value="2.5">2.5</option>
+            <option value="3">3</option>
+            <option value="3.5">3.5</option>
+            <option value="4">4</option>
+            <option value="4.5">4.5</option>
+            <option value="5+">5+</option>
+          </select>
+        </div>
+
+        <!-- Garage -->
+        <div class="verification-item">
+          <div class="verification-label">Garage</div>
+          <div class="verification-public-record">
+            Public records say: <strong>2-car garage</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="garage" data-value="2-car">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="garage">
+              Update
+            </button>
+          </div>
+          <select id="garage" class="form-input verification-input" style="display: none;">
+            <option value="None">None</option>
+            <option value="1-car">1-car</option>
+            <option value="2-car">2-car</option>
+            <option value="3+ car">3+ car</option>
+          </select>
+        </div>
+
+        <!-- Basement -->
+        <div class="verification-item">
+          <div class="verification-label">Basement</div>
+          <div class="verification-public-record">
+            Public records say: <strong>Finished basement</strong>
+          </div>
+          <div class="verification-actions">
+            <button type="button" class="button button-small button-success verify-correct" data-field="basement" data-value="Finished">
+              ✓ Correct
+            </button>
+            <button type="button" class="button button-small button-secondary verify-update" data-field="basement">
+              Update
+            </button>
+          </div>
+          <select id="basement" class="form-input verification-input" style="display: none;">
+            <option value="None">None</option>
+            <option value="Unfinished">Unfinished</option>
+            <option value="Partially Finished">Partially Finished</option>
+            <option value="Finished">Finished</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Screen 3: Features & Ages -->
+      <div class="verification-screen" id="screen-3" data-screen="3" style="display: none;">
+        <h1>Property Features</h1>
+        <p class="subtitle">Help us understand the age and condition of key features.</p>
+
+        <!-- HVAC -->
+        <div class="verification-group">
+          <div class="verification-label">HVAC System</div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Type</div>
+            <div class="verification-public-record">Public records say: <strong>Central AC</strong></div>
+            <div class="verification-actions">
+              <button type="button" class="button button-small button-success verify-correct" data-field="hvacType" data-value="Central AC">✓ Correct</button>
+              <button type="button" class="button button-small button-secondary verify-update" data-field="hvacType">Update</button>
+            </div>
+            <select id="hvacType" class="form-input verification-input" style="display: none;">
+              <option value="Central AC">Central AC</option>
+              <option value="Window Units">Window Units</option>
+              <option value="None">None</option>
+            </select>
+          </div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Age of AC Unit</div>
+            <input type="number" id="hvacAge" class="form-input" placeholder="Years old" min="0" max="50">
+          </div>
+        </div>
+
+        <!-- Roof -->
+        <div class="verification-group">
+          <div class="verification-label">Roof</div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Type</div>
+            <div class="verification-public-record">Public records say: <strong>Asphalt Shingles</strong></div>
+            <div class="verification-actions">
+              <button type="button" class="button button-small button-success verify-correct" data-field="roofType" data-value="Asphalt Shingles">✓ Correct</button>
+              <button type="button" class="button button-small button-secondary verify-update" data-field="roofType">Update</button>
+            </div>
+            <select id="roofType" class="form-input verification-input" style="display: none;">
+              <option value="Asphalt Shingles">Asphalt Shingles</option>
+              <option value="Metal">Metal</option>
+              <option value="Tile">Tile</option>
+              <option value="Flat">Flat</option>
+            </select>
+          </div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Age of Roof</div>
+            <input type="number" id="roofAge" class="form-input" placeholder="Years old" min="0" max="100">
+          </div>
+        </div>
+
+        <!-- Kitchen -->
+        <div class="verification-group">
+          <div class="verification-label">Kitchen</div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Condition</div>
+            <select id="kitchenCondition" class="form-input">
+              <option value="">Select condition</option>
+              <option value="Original">Original</option>
+              <option value="Partially Updated">Partially Updated</option>
+              <option value="Fully Renovated">Fully Renovated</option>
+            </select>
+          </div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Year Updated (if renovated)</div>
+            <input type="number" id="kitchenYear" class="form-input" placeholder="Year" min="1950" max="2024">
+          </div>
+        </div>
+
+        <!-- Bathrooms -->
+        <div class="verification-group">
+          <div class="verification-label">Bathrooms</div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Condition</div>
+            <select id="bathroomCondition" class="form-input">
+              <option value="">Select condition</option>
+              <option value="Original">Original</option>
+              <option value="Partially Updated">Partially Updated</option>
+              <option value="Fully Renovated">Fully Renovated</option>
+            </select>
+          </div>
+
+          <div class="verification-item-compact">
+            <div class="verification-sublabel">Year Updated (if renovated)</div>
+            <input type="number" id="bathroomYear" class="form-input" placeholder="Year" min="1950" max="2024">
+          </div>
+        </div>
+
+        <!-- Flooring -->
+        <div class="verification-item">
+          <div class="verification-label">Primary Flooring</div>
+          <select id="flooring" class="form-input">
+            <option value="">Select flooring type</option>
+            <option value="Hardwood">Hardwood</option>
+            <option value="Carpet">Carpet</option>
+            <option value="Tile">Tile</option>
+            <option value="Laminate">Laminate</option>
+            <option value="Vinyl">Vinyl</option>
+            <option value="Mixed">Mixed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Screen 4: Recent Changes -->
+      <div class="verification-screen" id="screen-4" data-screen="4" style="display: none;">
+        <h1>Recent Changes</h1>
+        <p class="subtitle">Have you made any improvements or changes to the property?</p>
+
+        <div class="verification-item">
+          <div class="verification-label">Select all that apply:</div>
+
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="Kitchen Remodel"> Kitchen Remodel
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="Bathroom Remodel"> Bathroom Remodel
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="New Roof"> New Roof
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="New HVAC"> New HVAC System
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="New Windows"> New Windows
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="Added Room"> Added Room/Addition
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="Deck/Patio"> New Deck or Patio
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="Landscaping"> Landscaping Improvements
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="changes" value="Other"> Other
+            </label>
+          </div>
+        </div>
+
+        <div class="verification-item">
+          <div class="verification-label">Additional Details (Optional)</div>
+          <textarea id="changesDescription" class="form-textarea" rows="4" placeholder="Describe any changes or improvements you've made..."></textarea>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="wizard-nav">
+        <button type="button" id="prev-button" class="button button-secondary" style="display: none;">
+          ← Previous
+        </button>
+        <button type="button" id="next-button" class="button button-primary">
+          Next →
+        </button>
+        <button type="button" id="finish-button" class="button button-primary" style="display: none;">
+          Continue to Photos →
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/property-verification.js"></script>
+</body>
+</html>

@@ -189,6 +189,86 @@ const RecommendationEngine = (function() {
     };
   }
 
+  /**
+   * Analyze kitchen condition
+   */
+  function analyzeKitchen(propertyData, sqft, state, city) {
+    const kitchenYear = parseInt(propertyData.kitchenYear) || 0;
+    const kitchenCondition = propertyData.kitchenCondition || '';
+    const currentYear = getCurrentYear();
+    const kitchenAge = kitchenYear > 0 ? currentYear - kitchenYear : 0;
+
+    // Skip if kitchen is recent (< 10 years) and good condition
+    if (kitchenAge < 10 && kitchenCondition !== 'Poor' && kitchenCondition !== 'Fair') {
+      return null;
+    }
+
+    // Age factor
+    let ageFactor = 0;
+    if (kitchenAge >= 25 || kitchenYear < 2000) ageFactor = 90;
+    else if (kitchenAge >= 15 || kitchenYear < 2010) ageFactor = 60;
+    else ageFactor = 30;
+
+    // Condition factor
+    let conditionFactor = 50;
+    if (kitchenCondition === 'Poor') conditionFactor = 100;
+    else if (kitchenCondition === 'Fair') conditionFactor = 60;
+    else if (kitchenCondition === 'Good') conditionFactor = 30;
+    else conditionFactor = Math.min(kitchenAge * 3, 100);
+
+    // ROI factor
+    const roiFactor = 85; // Kitchen typically 75-85% ROI
+
+    // Market factor
+    const marketFactors = {
+      'CA': 90, 'NY': 85, 'MI': 80, 'TX': 80, 'DEFAULT': 85
+    };
+    const marketFactor = marketFactors[state] || marketFactors.DEFAULT;
+
+    // Calculate priority score
+    const priorityScore = calculatePriorityScore(ageFactor, conditionFactor, roiFactor, marketFactor);
+    const priority = getPriorityCategory(priorityScore);
+
+    // Determine scope (major vs minor remodel)
+    const isMajorRemodel = kitchenCondition === 'Poor' || kitchenYear < 2000;
+    const isMinorUpdate = !isMajorRemodel;
+
+    // Calculate cost
+    let costLow, costHigh;
+    if (isMajorRemodel) {
+      costLow = 25000;
+      costHigh = 40000;
+    } else {
+      costLow = 15000;
+      costHigh = 25000;
+    }
+
+    // Calculate value increase
+    const roiMultiplier = (ROI_MULTIPLIERS[state] || ROI_MULTIPLIERS.DEFAULT).kitchen;
+    const valueLow = Math.round(costLow * roiMultiplier * 0.95);
+    const valueHigh = Math.round(costHigh * roiMultiplier * 1.05);
+
+    // ROI percentage
+    const roiLow = Math.round((valueLow / costHigh) * 100);
+    const roiHigh = Math.round((valueHigh / costLow) * 100);
+
+    return {
+      id: 'kitchen-remodel',
+      title: isMajorRemodel ? 'Kitchen Remodel' : 'Kitchen Update',
+      description: isMajorRemodel
+        ? `Your kitchen hasn't been updated since ${kitchenYear || 'the original build'} and shows its age. A modern kitchen remodel will significantly improve your home's appeal and value.`
+        : `Your kitchen could benefit from updates. Modernizing fixtures, countertops, and appliances will improve functionality and appeal to buyers.`,
+      priority: priority,
+      priorityScore: priorityScore,
+      icon: '🍳',
+      costRange: { low: costLow, high: costHigh },
+      valueIncrease: { low: valueLow, high: valueHigh },
+      roi: { low: roiLow, high: roiHigh },
+      insight: `Homes in ${city || 'your area'} with updated kitchens sell 15% faster`,
+      confidence: kitchenYear > 0 ? 88 : 75
+    };
+  }
+
   // Public API placeholder
   return {
     generateRecommendations: function() {},

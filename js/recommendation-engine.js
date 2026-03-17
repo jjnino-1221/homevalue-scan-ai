@@ -130,6 +130,65 @@ const RecommendationEngine = (function() {
     };
   }
 
+  /**
+   * Analyze roof condition
+   */
+  function analyzeRoof(propertyData, sqft, state) {
+    const roofAge = parseInt(propertyData.roofAge) || 0;
+
+    // Skip if roof is less than 18 years old
+    if (roofAge < 18) return null;
+
+    // Age factor (0-100)
+    let ageFactor = 0;
+    if (roofAge >= 25) ageFactor = 100;
+    else if (roofAge >= 20) ageFactor = 75;
+    else ageFactor = 50;
+
+    // Condition factor
+    const conditionFactor = Math.min(roofAge * 3.5, 100);
+
+    // ROI factor
+    const roiFactor = 55; // Roof typically 50-60% ROI
+
+    // Market factor
+    const marketFactor = 75; // Important everywhere
+
+    // Calculate priority score
+    const priorityScore = calculatePriorityScore(ageFactor, conditionFactor, roiFactor, marketFactor);
+    const priority = getPriorityCategory(priorityScore);
+
+    // Calculate cost
+    const baseCost = 8000;
+    const costPerSqft = 1.5;
+    const totalCost = baseCost + (sqft * costPerSqft);
+    const costLow = Math.round(totalCost * 0.9);
+    const costHigh = Math.round(totalCost * 1.2);
+
+    // Calculate value increase
+    const roiMultiplier = (ROI_MULTIPLIERS[state] || ROI_MULTIPLIERS.DEFAULT).roof;
+    const valueLow = Math.round(costLow * roiMultiplier * 0.9);
+    const valueHigh = Math.round(costHigh * roiMultiplier * 1.1);
+
+    // ROI percentage
+    const roiLow = Math.round((valueLow / costHigh) * 100);
+    const roiHigh = Math.round((valueHigh / costLow) * 100);
+
+    return {
+      id: 'roof-replacement',
+      title: 'Roof Replacement',
+      description: `Your ${roofAge}-year-old ${propertyData.roofType || 'roof'} is ${roofAge >= 25 ? 'well past its typical lifespan' : 'nearing the end of its lifespan'}. A new roof protects your investment and is a top concern for buyers.`,
+      priority: priority,
+      priorityScore: priorityScore,
+      icon: '🏠',
+      costRange: { low: costLow, high: costHigh },
+      valueIncrease: { low: valueLow, high: valueHigh },
+      roi: { low: roiLow, high: roiHigh },
+      insight: 'New roof protects your investment and is a top concern for buyers',
+      confidence: roofAge > 0 ? 90 : 65
+    };
+  }
+
   // Public API placeholder
   return {
     generateRecommendations: function() {},

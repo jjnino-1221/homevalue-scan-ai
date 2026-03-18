@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Improve Your Value - Mobile Valuation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Loading State (hidden after load) -->
+    <div id="loading-state" class="loading-state">
+      <div class="loading-content">
+        <h2>Analyzing Improvement Opportunities...</h2>
+        <div class="loading-steps">
+          <div class="loading-step" data-step="1">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Analyzing property features</span>
+          </div>
+          <div class="loading-step" data-step="2">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Comparing with market data</span>
+          </div>
+          <div class="loading-step" data-step="3">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Evaluating improvement opportunities</span>
+          </div>
+          <div class="loading-step" data-step="4">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Calculating ROI projections</span>
+          </div>
+          <div class="loading-step" data-step="5">
+            <span class="loading-icon">⏳</span>
+            <span class="loading-text">Generating recommendations</span>
+          </div>
+        </div>
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+
+    <!-- Recommendations Content (hidden until loaded) -->
+    <div id="recommendations-content" class="recommendations-content" style="display: none;">
+      <!-- Navigation -->
+      <nav class="page-nav">
+        <a href="results.html" class="nav-back">← Back to Results</a>
+      </nav>
+
+      <!-- Main Content -->
+      <main>
+        <h1>💡 Increase Your Property Value</h1>
+        <p class="subtitle">Based on analysis of your property data and local market trends</p>
+
+        <!-- Summary Card -->
+        <div class="summary-card" id="summary-card">
+          <div class="summary-icon">📊</div>
+          <div class="summary-content">
+            <h3>We found <strong id="recommendation-count">—</strong> recommendations</h3>
+            <p>Potential value increase: <strong id="value-range">$— - $—</strong></p>
+          </div>
+        </div>
+
+        <!-- Recommendations Grid -->
+        <div class="recommendations-grid" id="recommendations-grid">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+          <a href="results.html" class="button button-secondary">← Back to Results</a>
+          <button type="button" id="get-report" class="button button-primary">📄 Get Full Report</button>
+          <button type="button" id="start-new" class="button button-secondary">🔄 Start New Valuation</button>
+        </div>
+
+        <!-- Disclaimer -->
+        <p class="disclaimer">
+          These recommendations are estimates based on typical market conditions and property data.
+          Actual costs and value increases may vary. Consult with licensed contractors for accurate quotes.
+        </p>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/photo-storage.js"></script>
+  <script src="js/valuation-engine.js"></script>
+  <script src="js/recommendation-engine.js"></script>
+  <script src="js/recommendations-page.js"></script>
+</body>
+</html>

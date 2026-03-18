@@ -159,11 +159,20 @@
    * Setup event handlers
    */
   function setupEventHandlers() {
+    document.getElementById('see-recommendations').addEventListener('click', handleSeeRecommendations);
+
     // Get Full Report button
     document.getElementById('get-report').addEventListener('click', handleGetReport);
 
     // Start New Valuation button
     document.getElementById('start-new').addEventListener('click', handleStartNew);
+  }
+
+  /**
+   * Handle See Recommendations
+   */
+  function handleSeeRecommendations() {
+    navigateTo('recommendations.html');
   }
 
   /**

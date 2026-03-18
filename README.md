@@ -179,6 +179,7 @@ This project aims to revolutionize the property appraisal process by:
 5. **Camera Capture** - Take photos of 5 rooms with quality feedback
 6. **Photo Review** - Review and retake if needed
 7. **Results** - View property valuation with comparables
+8. **Recommendations** - AI-styled improvement suggestions with ROI analysis
 
 ## Phase 3 Features
 

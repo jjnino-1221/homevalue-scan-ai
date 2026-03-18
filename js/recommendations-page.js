@@ -82,6 +82,49 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /**
+   * Display all recommendations
+   */
+  function displayRecommendations(recommendations) {
+    // Update summary card
+    displaySummary(recommendations);
+
+    // Display recommendation cards
+    const grid = document.getElementById('recommendations-grid');
+    grid.innerHTML = '';
+
+    if (recommendations.length === 0) {
+      grid.innerHTML = '<p class="no-recommendations">No recommendations available at this time.</p>';
+      return;
+    }
+
+    recommendations.forEach(rec => {
+      const card = createRecommendationCard(rec);
+      grid.appendChild(card);
+    });
+  }
+
+  /**
+   * Display summary card
+   */
+  function displaySummary(recommendations) {
+    // Count
+    const count = recommendations.length;
+    const countText = count === 1 ? '1 recommendation' : `${count} recommendations`;
+    document.getElementById('recommendation-count').textContent = countText;
+
+    // Calculate total value increase range
+    let totalLow = 0;
+    let totalHigh = 0;
+    recommendations.forEach(rec => {
+      totalLow += rec.valueIncrease.low;
+      totalHigh += rec.valueIncrease.high;
+    });
+
+    const valueRange = `${RecommendationEngine.formatCurrency(totalLow)} - ${RecommendationEngine.formatCurrency(totalHigh)}`;
+    document.getElementById('value-range').textContent = valueRange;
+  }
+
   // Initialize when DOM ready
   document.addEventListener('DOMContentLoaded', init);
 })();

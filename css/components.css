@@ -1659,3 +1659,49 @@
     justify-content: space-between;
   }
 }
+
+/* ============================================
+   RECOMMENDATIONS PAGE STYLES
+   ============================================ */
+
+/* Summary Card */
+.summary-card {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 2px solid #3B82F6;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.summary-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.summary-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.summary-content p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.summary-content strong {
+  color: var(--primary-blue);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .summary-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}

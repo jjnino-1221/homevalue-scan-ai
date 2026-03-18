@@ -280,20 +280,21 @@ See `docs/TESTING_CHECKLIST.md` for comprehensive Phase 3 testing guide.
 mobile-valuation/
 ├── index.html                  # Landing page
 ├── address.html                # Address entry (simplified for demo)
-├── property-verification.html  # Property verification wizard (NEW - Phase 5)
+├── property-verification.html  # Property verification wizard
 ├── instructions.html           # Photo instructions
 ├── capture.html                # Camera capture
 ├── review.html                 # Photo review
-├── results.html                # Valuation results (NEW - Phase 4)
+├── results.html                # Valuation results
+├── recommendations.html        # Value improvement recommendations (NEW - Phase 6)
 ├── css/
 │   ├── main.css               # Design system
-│   ├── components.css         # Reusable components + camera UI + results + wizard
+│   ├── components.css         # Reusable components + all page styles
 │   └── pages.css              # Page-specific styles
 ├── js/
 │   ├── utils.js               # Utility functions
 │   ├── main.js                # Page initialization
-│   ├── address-simple.js      # Mock geolocation (NEW - Phase 5)
-│   ├── property-verification.js # Verification wizard (NEW - Phase 5)
+│   ├── address-simple.js      # Mock geolocation
+│   ├── property-verification.js # Verification wizard
 │   ├── camera.js              # Camera module
 │   ├── photo-storage.js       # Storage module
 │   ├── quality-analyzer.js    # TensorFlow.js module
@@ -301,8 +302,10 @@ mobile-valuation/
 │   ├── capture-controller.js  # Navigation state machine
 │   ├── capture-main.js        # Capture orchestration
 │   ├── review-page.js         # Review page logic
-│   ├── valuation-engine.js    # Mock AVM (NEW - Phase 4)
-│   └── results-page.js        # Results page logic (NEW - Phase 4)
+│   ├── valuation-engine.js    # Mock AVM
+│   ├── results-page.js        # Results page logic
+│   ├── recommendation-engine.js # Recommendation generation (NEW - Phase 6)
+│   └── recommendations-page.js # Recommendations page logic (NEW - Phase 6)
 └── docs/
     ├── TESTING_CHECKLIST.md
     ├── BUG_FIX_ADDRESS_ENTRY.md
@@ -310,10 +313,12 @@ mobile-valuation/
     └── superpowers/
         ├── specs/
         │   ├── 2026-03-16-phase-3-camera-capture-design.md
-        │   └── 2026-03-17-phase-5-demo-simplification.md
+        │   ├── 2026-03-17-phase-5-demo-simplification.md
+        │   └── 2026-03-17-phase-6-value-recommendations.md
         └── plans/
             ├── 2026-03-16-phase-3-camera-capture.md
-            └── 2026-03-17-phase-5-demo-simplification.md
+            ├── 2026-03-17-phase-5-demo-simplification.md
+            └── 2026-03-17-phase-6-value-recommendations.md
 ```
 
 ## Performance

@@ -1868,3 +1868,22 @@
   line-height: 1.5;
   color: #78350F;
 }
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .recommendation-card {
+    padding: 20px;
+  }
+
+  .recommendation-title {
+    font-size: 18px;
+  }
+
+  .recommendation-description {
+    font-size: 14px;
+  }
+
+  .stat-value {
+    font-size: 15px;
+  }
+}

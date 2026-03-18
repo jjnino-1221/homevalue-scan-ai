@@ -125,6 +125,79 @@
     document.getElementById('value-range').textContent = valueRange;
   }
 
+  /**
+   * Create recommendation card element
+   */
+  function createRecommendationCard(rec) {
+    const card = document.createElement('div');
+    card.className = 'recommendation-card';
+    card.dataset.priority = rec.priority;
+
+    // Format values
+    const costRange = `${RecommendationEngine.formatCurrency(rec.costRange.low)} - ${RecommendationEngine.formatCurrency(rec.costRange.high)}`;
+    const valueRange = `${RecommendationEngine.formatCurrency(rec.valueIncrease.low)} - ${RecommendationEngine.formatCurrency(rec.valueIncrease.high)}`;
+    const roiRange = `${rec.roi.low}-${rec.roi.high}%`;
+
+    // Get priority label
+    const priorityLabel = getPriorityLabel(rec.priority);
+
+    card.innerHTML = `
+      <div class="recommendation-header">
+        <span class="priority-badge ${rec.priority}">${priorityLabel}</span>
+        <span class="recommendation-icon">${rec.icon}</span>
+      </div>
+
+      <h3 class="recommendation-title">${rec.title}</h3>
+
+      <p class="recommendation-description">${rec.description}</p>
+
+      <div class="recommendation-stats">
+        <div class="stat-item">
+          <span class="stat-icon">💵</span>
+          <div class="stat-content">
+            <div class="stat-label">Est. Cost</div>
+            <div class="stat-value">${costRange}</div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-icon">📈</span>
+          <div class="stat-content">
+            <div class="stat-label">Value Increase</div>
+            <div class="stat-value">${valueRange}</div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-icon">🎯</span>
+          <div class="stat-content">
+            <div class="stat-label">Typical ROI</div>
+            <div class="stat-value">${roiRange}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="recommendation-insight">
+        <span class="insight-icon">💡</span>
+        <p>${rec.insight}</p>
+      </div>
+    `;
+
+    return card;
+  }
+
+  /**
+   * Get priority label
+   */
+  function getPriorityLabel(priority) {
+    const labels = {
+      'critical': '⚠️ Critical',
+      'high': '🔥 High Priority',
+      'medium': '⭐ Recommended'
+    };
+    return labels[priority] || labels.medium;
+  }
+
   // Initialize when DOM ready
   document.addEventListener('DOMContentLoaded', init);
 })();

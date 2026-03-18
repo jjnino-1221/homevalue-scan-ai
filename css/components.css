@@ -1705,3 +1705,25 @@
     text-align: center;
   }
 }
+
+/* Recommendations Grid */
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 32px;
+  margin-bottom: 40px;
+}
+
+@media (min-width: 768px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.no-recommendations {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 16px;
+  padding: 40px 20px;
+}

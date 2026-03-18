@@ -198,6 +198,62 @@
     return labels[priority] || labels.medium;
   }
 
+  /**
+   * Setup event handlers
+   */
+  function setupEventHandlers() {
+    // Get Full Report button
+    document.getElementById('get-report').addEventListener('click', handleGetReport);
+
+    // Start New Valuation button
+    document.getElementById('start-new').addEventListener('click', handleStartNew);
+  }
+
+  /**
+   * Handle Get Full Report
+   */
+  function handleGetReport() {
+    // In production, this would:
+    // - Show email capture modal
+    // - Generate PDF report with valuation + recommendations
+    // - Email report to user
+
+    alert(
+      '📄 Full Report\n\n' +
+      'In production, this would:\n' +
+      '• Capture your email address\n' +
+      '• Generate a detailed PDF report\n' +
+      '• Include valuation and recommendations\n' +
+      '• Email the report to you\n' +
+      '• Save for future reference\n\n' +
+      'For this demo, please screenshot the results!'
+    );
+  }
+
+  /**
+   * Handle Start New Valuation
+   */
+  function handleStartNew() {
+    const confirmed = confirm(
+      'Start a new valuation?\n\n' +
+      'This will clear your current property data and photos.'
+    );
+
+    if (confirmed) {
+      // Clear all session data
+      PhotoStorage.clearAll();
+      localStorage.removeItem('propertyAddress');
+      localStorage.removeItem('propertyData');
+      localStorage.removeItem('currentStep');
+      localStorage.removeItem('sessionStarted');
+
+      console.log('✓ Session cleared');
+
+      // Navigate to home
+      navigateTo('index.html');
+    }
+  }
+
   // Initialize when DOM ready
   document.addEventListener('DOMContentLoaded', init);
 })();

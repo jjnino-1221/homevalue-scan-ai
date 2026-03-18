@@ -464,9 +464,94 @@ const RecommendationEngine = (function() {
     };
   }
 
-  // Public API placeholder
+  /**
+   * Generate recommendations based on property data
+   * @param {Object} propertyData - Property verification data
+   * @param {Array} photos - Photos with dimensions
+   * @param {Object} valuation - Valuation results
+   * @param {Object} address - Address data
+   * @returns {Array} Array of recommendation objects
+   */
+  function generateRecommendations(propertyData, photos, valuation, address) {
+    // Validate inputs
+    if (!propertyData) {
+      console.warn('No property data available');
+      return [];
+    }
+
+    // Extract data
+    const sqft = valuation?.totalSqFt || parseInt(propertyData.squareFootage) || 2000;
+    const state = address?.state || 'DEFAULT';
+    const city = address?.city || 'your area';
+
+    // Run all analyzers
+    const recommendations = [];
+
+    // HVAC
+    const hvac = analyzeHVAC(propertyData, sqft, state);
+    if (hvac) recommendations.push(hvac);
+
+    // Roof
+    const roof = analyzeRoof(propertyData, sqft, state);
+    if (roof) recommendations.push(roof);
+
+    // Kitchen
+    const kitchen = analyzeKitchen(propertyData, sqft, state, city);
+    if (kitchen) recommendations.push(kitchen);
+
+    // Bathroom
+    const bathroom = analyzeBathroom(propertyData, sqft, state, city);
+    if (bathroom) recommendations.push(bathroom);
+
+    // Exterior
+    const exterior = analyzeExterior(propertyData, sqft, state);
+    if (exterior) recommendations.push(exterior);
+
+    // Energy
+    const energy = analyzeEnergy(propertyData, sqft, state);
+    if (energy) recommendations.push(energy);
+
+    // Sort by priority score (descending)
+    recommendations.sort((a, b) => {
+      // First by priority category
+      const priorityOrder = { critical: 3, high: 2, medium: 1 };
+      const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+      if (priorityDiff !== 0) return priorityDiff;
+
+      // Then by priority score
+      return b.priorityScore - a.priorityScore;
+    });
+
+    // If no recommendations generated, return generic ones
+    if (recommendations.length === 0) {
+      recommendations.push(generateGenericRecommendation(sqft, state, city));
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Generate generic recommendation when data is insufficient
+   */
+  function generateGenericRecommendation(sqft, state, city) {
+    return {
+      id: 'general-improvements',
+      title: 'Property Improvements',
+      description: 'Based on typical properties in your area, consider updating key areas like the kitchen, bathrooms, and improving curb appeal to maximize your home\'s value.',
+      priority: 'medium',
+      priorityScore: 50,
+      icon: '🏠',
+      costRange: { low: 10000, high: 30000 },
+      valueIncrease: { low: 7500, high: 24000 },
+      roi: { low: 70, high: 85 },
+      insight: `Most homes in ${city} benefit from kitchen and bathroom updates`,
+      confidence: 60
+    };
+  }
+
+  // Public API
   return {
-    generateRecommendations: function() {},
-    formatCurrency: function() {}
+    generateRecommendations: generateRecommendations,
+    formatCurrency: formatCurrency
   };
 })();

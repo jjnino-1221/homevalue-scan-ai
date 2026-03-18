@@ -1807,3 +1807,64 @@
   color: var(--text-secondary);
   margin: 0 0 20px 0;
 }
+
+/* Recommendation Stats */
+.recommendation-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 8px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Recommendation Insight */
+.recommendation-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: #FEF3C7;
+  border-left: 3px solid #F59E0B;
+  border-radius: 4px;
+}
+
+.insight-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.recommendation-insight p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #78350F;
+}

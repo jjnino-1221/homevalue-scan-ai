@@ -1,0 +1,279 @@
+// Chat Interface - Message rendering and user input handling
+// Manages message bubbles, typing indicators, and scroll behavior
+
+import * as InteractiveUI from './interactive-ui.js';
+
+const messagesContainer = document.getElementById('messagesContainer');
+const messageInput = document.getElementById('messageInput');
+const sendButton = document.getElementById('sendButton');
+const typingIndicator = document.getElementById('typingIndicator');
+
+let currentMessageElement = null;
+let currentInteractiveContainer = null;
+
+// Append message to chat
+export function appendMessage(role, content, cardData = null) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${role}`;
+
+  const bubbleDiv = document.createElement('div');
+  bubbleDiv.className = 'message-bubble';
+  bubbleDiv.textContent = content;
+
+  messageDiv.appendChild(bubbleDiv);
+
+  // Add inline card if provided
+  if (cardData) {
+    const cardDiv = createMessageCard(cardData);
+    bubbleDiv.appendChild(cardDiv);
+  }
+
+  messagesContainer.appendChild(messageDiv);
+  scrollToBottom();
+
+  // If this is an assistant message, set as current for streaming
+  if (role === 'assistant') {
+    currentMessageElement = bubbleDiv;
+  }
+
+  return messageDiv;
+}
+
+// Append text to current message (for streaming)
+export function appendToCurrentMessage(text) {
+  if (!currentMessageElement) {
+    // Create new assistant message if none exists
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message assistant';
+
+    const bubbleDiv = document.createElement('div');
+    bubbleDiv.className = 'message-bubble';
+
+    messageDiv.appendChild(bubbleDiv);
+    messagesContainer.appendChild(messageDiv);
+
+    currentMessageElement = bubbleDiv;
+  }
+
+  currentMessageElement.textContent += text;
+  scrollToBottom();
+}
+
+// Append interactive UI pattern to current message
+export function appendInteractiveUI(pattern) {
+  if (!currentMessageElement) {
+    console.warn('No current message to append interactive UI to');
+    return;
+  }
+
+  // Create container for interactive elements
+  const interactiveContainer = document.createElement('div');
+  interactiveContainer.className = 'interactive-options';
+
+  // Render the UI pattern with callback
+  const uiElement = InteractiveUI.renderUIPattern(pattern, (value, label) => {
+    // When user selects an option, send it as a message
+    handleInteractiveSelection(value, label || value);
+  });
+
+  if (uiElement) {
+    interactiveContainer.appendChild(uiElement);
+    currentMessageElement.appendChild(interactiveContainer);
+    currentInteractiveContainer = interactiveContainer;
+    scrollToBottom();
+  }
+}
+
+// Handle selection from interactive UI element
+function handleInteractiveSelection(value, displayText) {
+  // Remove the interactive container after selection
+  if (currentInteractiveContainer) {
+    currentInteractiveContainer.remove();
+    currentInteractiveContainer = null;
+  }
+
+  // Send the selected value as user message
+  if (window.AIOrchestrator) {
+    window.AIOrchestrator.sendMessage(displayText);
+  }
+}
+
+// Append confidence meter to current message
+export function appendConfidenceMeter(confidenceData) {
+  if (!currentMessageElement) return;
+
+  const meter = InteractiveUI.renderConfidenceMeter(confidenceData);
+  currentMessageElement.appendChild(meter);
+  scrollToBottom();
+}
+
+// Append completion badge
+export function appendCompletionBadge(message) {
+  if (!currentMessageElement) return;
+
+  const badge = InteractiveUI.renderCompletionBadge(message);
+  currentMessageElement.appendChild(badge);
+  scrollToBottom();
+}
+
+// Create inline message card (valuation, recommendation, etc.)
+function createMessageCard(cardData) {
+  const cardDiv = document.createElement('div');
+  cardDiv.className = 'message-card';
+
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'card-header';
+
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'card-content';
+
+  switch (cardData.type) {
+    case 'valuation':
+      headerDiv.innerHTML = '<span>📊</span> Property Valuation';
+      contentDiv.innerHTML = `
+        <div class="valuation-estimate">$${cardData.data.estimate.toLocaleString()}</div>
+        <div class="valuation-range">Range: $${cardData.data.rangeLow.toLocaleString()} - $${cardData.data.rangeHigh.toLocaleString()}</div>
+        <span class="confidence-badge">${Math.round(cardData.data.confidence * 100)}% Confidence</span>
+      `;
+      break;
+
+    case 'recommendation':
+      headerDiv.innerHTML = `<span>💡</span> ${cardData.data.title}`;
+      contentDiv.innerHTML = `
+        <p>${cardData.data.description}</p>
+        <p><strong>Cost Range:</strong> $${cardData.data.costRange.min.toLocaleString()} - $${cardData.data.costRange.max.toLocaleString()}</p>
+        <p><strong>Impact Score:</strong> ${cardData.data.impactScore}/100</p>
+      `;
+      break;
+
+    case 'profile':
+      headerDiv.innerHTML = '<span>🏠</span> Property Profile';
+      contentDiv.innerHTML = `
+        <p><strong>Address:</strong> ${cardData.data.address || 'Not provided'}</p>
+        <p><strong>Bedrooms:</strong> ${cardData.data.bedrooms || 'Not provided'}</p>
+        <p><strong>Bathrooms:</strong> ${cardData.data.bathrooms || 'Not provided'}</p>
+        <p><strong>Square Feet:</strong> ${cardData.data.sqft || 'Not provided'}</p>
+      `;
+      break;
+  }
+
+  cardDiv.appendChild(headerDiv);
+  cardDiv.appendChild(contentDiv);
+  return cardDiv;
+}
+
+// Show typing indicator
+export function showTypingIndicator() {
+  typingIndicator.style.display = 'block';
+  currentMessageElement = null; // Reset for new message
+  scrollToBottom();
+}
+
+// Hide typing indicator
+export function hideTypingIndicator() {
+  typingIndicator.style.display = 'none';
+}
+
+// Show error message
+export function showError(message) {
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'system-message';
+  errorDiv.style.color = 'var(--error-color)';
+  errorDiv.textContent = `⚠️ ${message}`;
+  messagesContainer.appendChild(errorDiv);
+  scrollToBottom();
+}
+
+// Show system message
+export function showSystemMessage(message) {
+  const systemDiv = document.createElement('div');
+  systemDiv.className = 'system-message';
+  systemDiv.textContent = message;
+  messagesContainer.appendChild(systemDiv);
+  scrollToBottom();
+}
+
+// Scroll to bottom of messages
+export function scrollToBottom() {
+  setTimeout(() => {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }, 0);
+}
+
+// Clear all messages
+export function clearMessages() {
+  messagesContainer.innerHTML = '';
+  currentMessageElement = null;
+}
+
+// Sanitize user input
+function sanitizeUserInput(text) {
+  // Remove null bytes
+  text = text.replace(/\0/g, '');
+
+  // Trim whitespace
+  text = text.trim();
+
+  // Limit length
+  if (text.length > 2000) {
+    text = text.substring(0, 2000);
+    showError('Message truncated to 2000 characters');
+  }
+
+  return text;
+}
+
+// Handle send button click
+sendButton.addEventListener('click', handleSendMessage);
+
+// Handle Enter key in input
+messageInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSendMessage();
+  }
+});
+
+// Auto-resize textarea
+messageInput.addEventListener('input', () => {
+  messageInput.style.height = 'auto';
+  messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+});
+
+// Handle sending message
+function handleSendMessage() {
+  const text = sanitizeUserInput(messageInput.value);
+
+  if (!text || text.length < 1) {
+    return;
+  }
+
+  // Clear input
+  messageInput.value = '';
+  messageInput.style.height = 'auto';
+
+  // Send to AI Orchestrator
+  if (window.AIOrchestrator) {
+    window.AIOrchestrator.sendMessage(text);
+  } else {
+    showError('AI Orchestrator not loaded');
+  }
+}
+
+// Export interface
+export const ChatInterface = {
+  appendMessage,
+  appendToCurrentMessage,
+  appendInteractiveUI,
+  appendConfidenceMeter,
+  appendCompletionBadge,
+  showTypingIndicator,
+  hideTypingIndicator,
+  showError,
+  showSystemMessage,
+  scrollToBottom,
+  clearMessages
+};
+
+// Make available globally
+window.ChatInterface = ChatInterface;

@@ -1,0 +1,69 @@
+
+Running 2 tests using 1 worker
+
+
+================================================================================
+COMPREHENSIVE TEST REPORT - V2 CONVERSATIONAL FLOW
+================================================================================
+
+✅ SUCCESSFUL ITEMS:
+  ✅ Page loaded successfully
+
+❌ ISSUES FOUND:
+  ❌ "Yes, evaluate" button not visible
+  ❌ Address prompt did not appear after clicking button
+  ❌ Could not enter address: locator.fill: Test timeout of 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.chat-input, input[type="text"]').first()[22m
+
+  ❌ Property verification not found: locator.isVisible: Target page, context or browser has been closed
+  ❌ Verification buttons check failed: locator.isVisible: Target page, context or browser has been closed
+  ❌ RDS class check failed: locator.count: Target page, context or browser has been closed
+  ❌ CSS check failed: page.evaluate: Target page, context or browser has been closed
+  ❌ JavaScript module check failed: page.evaluate: Target page, context or browser has been closed
+  ❌ Screenshot failed: page.screenshot: Target page, context or browser has been closed
+  ❌ Message history check failed: locator.count: Target page, context or browser has been closed
+  ❌ API server not responding: page.evaluate: Target page, context or browser has been closed
+  ❌ Result card check failed: locator.count: Target page, context or browser has been closed
+
+================================================================================
+SUMMARY: 1 passed, 12 issues found
+================================================================================
+
+  x  1 [chromium] › tests\comprehensive-flow.spec.js:24:3 › V2 Conversational Flow - Comprehensive Audit › Complete conversation flow with detailed reporting (30.3s)
+
+================================================================================
+RDS COMPLIANCE AUDIT
+================================================================================
+
+BUTTONS:
+
+CARDS:
+  ⚠️ No cards found yet
+
+COLORS:
+  Primary color: Not set
+  Background: rgba(0, 0, 0, 0)
+
+================================================================================
+
+  ok 2 [chromium] › tests\comprehensive-flow.spec.js:282:3 › V2 Conversational Flow - Comprehensive Audit › RDS Design System Compliance Audit (997ms)
+
+
+  1) [chromium] › tests\comprehensive-flow.spec.js:24:3 › V2 Conversational Flow - Comprehensive Audit › Complete conversation flow with detailed reporting 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-flow-V2-Conv-23ee0-low-with-detailed-reporting-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-flow-V2-Conv-23ee0-low-with-detailed-reporting-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-flow-V2-Conv-23ee0-low-with-detailed-reporting-chromium\error-context.md
+
+  1 failed
+    [chromium] › tests\comprehensive-flow.spec.js:24:3 › V2 Conversational Flow - Comprehensive Audit › Complete conversation flow with detailed reporting 
+  1 passed (38.9s)

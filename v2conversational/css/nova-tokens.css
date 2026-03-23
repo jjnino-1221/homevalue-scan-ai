@@ -1,0 +1,459 @@
+/**
+ * Nova Design System - Official Design Tokens
+ * Extracted from Figma Nova Foundations Library & Nova UI Kit
+ * Date: 2026-03-22
+ *
+ * Source Files:
+ * - Nova Foundations Library: wcPoA5K43Np5znrldVD7Oi
+ * - Nova UI Kit: cjLKKsRFFlOUbE19kzwrhc
+ */
+
+:root {
+  /* ============================================
+     BRAND COLORS
+     ============================================ */
+
+  --rkt-brand-500: #DE3341;  /* Primary brand color, used for hover states */
+
+  /* ============================================
+     TEXT COLORS
+     ============================================ */
+
+  --rkt-text-primary: #111111;      /* Gray-800 - Primary text on light backgrounds */
+  --rkt-text-subtle: #545454;       /* Gray-600 - Subtle text on light backgrounds */
+  --rkt-text-on-dark: #FFFFFF;      /* White - Text on dark backgrounds */
+  --rkt-text-tag-success: #0B5E36;  /* Success text variant */
+
+  /* ============================================
+     BACKGROUND COLORS
+     ============================================ */
+
+  --rkt-bg-primary: #FFFFFF;    /* White - Primary background */
+  --rkt-bg-secondary: #F7F7F7;  /* Gray-50 - Secondary background for depth */
+  --rkt-bg-tertiary: #F2F2F2;   /* Gray-100 - Tertiary background in components */
+
+  /* ============================================
+     BORDER COLORS
+     ============================================ */
+
+  --rkt-border-primary: #111111;    /* Gray-800 - Primary borders, focus states */
+  --rkt-border-emphasis: #C1C1C1;   /* Gray - Emphasis borders */
+  --rkt-border-inactive: #E9E9E9;   /* Gray - Inactive tab borders */
+
+  /* ============================================
+     INTERACTION COLORS
+     ============================================ */
+
+  --rkt-hover-tertiary: #F7F7F7;    /* Gray-50 - Hover state for tertiary elements */
+
+  /* ============================================
+     SEMANTIC COLORS - INFORMATIONAL
+     ============================================ */
+
+  --rkt-info-primary: #5E79D9;      /* Blue-500 - Primary informational color */
+  --rkt-info-border: #B6C4F7;       /* Blue-200 - Informational border */
+  --rkt-info-bg: #EDF1FF;           /* Blue-50 - Informational background */
+
+  /* ============================================
+     SEMANTIC COLORS - WARNING
+     ============================================ */
+
+  --rkt-warning-primary-text: #865404;  /* Yellow-700 - Warning primary text */
+  --rkt-warning-primary: #A56A06;       /* Yellow-600 - Warning primary color */
+  --rkt-warning-border: #FED48D;        /* Yellow-200 - Warning border */
+  --rkt-warning-bg: #FFF5E4;            /* Yellow-50 - Warning background */
+
+  /* ============================================
+     SEMANTIC COLORS - SUCCESS
+     ============================================ */
+
+  --rkt-success-primary: #0A9142;   /* Green-600 - Success primary color */
+  --rkt-success-border: #94CFAD;    /* Green-200 - Success border */
+  --rkt-success-bg: #EFF7F3;        /* Green-50 - Success background */
+
+  /* ============================================
+     ICON COLORS
+     ============================================ */
+
+  --rkt-icon-primary: #111111;      /* Gray-800 - Primary icon color */
+  --rkt-icon-secondary: #545454;    /* Gray-600 - Secondary icon color */
+  --rkt-icon-on-dark: #FFFFFF;      /* White - Icons on dark backgrounds */
+
+  /* ============================================
+     TYPOGRAPHY - FONT FAMILIES
+     ============================================ */
+
+  --rkt-font-family-primary: 'WNTL_Text:Medium', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --rkt-font-family-regular: 'WNTL_Text:Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --rkt-font-family-demibold: 'WNTL_Text:DemiBold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* ============================================
+     TYPOGRAPHY - FONT SIZES
+     ============================================ */
+
+  --rkt-font-size-12: 12px;
+  --rkt-font-size-14: 14px;
+  --rkt-font-size-16: 16px;
+  --rkt-font-size-20: 20px;
+  --rkt-font-size-32: 32px;  /* Not in original scan, inferred from design */
+  --rkt-font-size-36: 36px;
+  --rkt-font-size-48: 48px;
+
+  /* ============================================
+     TYPOGRAPHY - FONT WEIGHTS
+     ============================================ */
+
+  --rkt-font-weight-regular: 400;
+  --rkt-font-weight-medium: 500;
+  --rkt-font-weight-demibold: 600;  /* Inferred from DemiBold */
+
+  /* ============================================
+     TYPOGRAPHY - LINE HEIGHTS
+     ============================================ */
+
+  --rkt-line-height-24: 24px;
+  --rkt-line-height-28: 28px;
+  --rkt-line-height-44: 44px;
+  --rkt-line-height-56: 56px;
+  --rkt-line-height-normal: normal;
+
+  /* ============================================
+     TYPOGRAPHY - LETTER SPACING
+     ============================================ */
+
+  --rkt-letter-spacing-headings: -1px;
+  --rkt-letter-spacing-tight: -0.32px;
+  --rkt-letter-spacing-normal: 0;
+
+  /* ============================================
+     SPACING SCALE
+     ============================================ */
+
+  --rkt-space-2: 2px;
+  --rkt-space-4: 4px;
+  --rkt-space-6: 6px;
+  --rkt-space-8: 8px;
+  --rkt-space-10: 10px;
+  --rkt-space-12: 12px;
+  --rkt-space-14: 14px;   /* Chip horizontal padding */
+  --rkt-space-16: 16px;
+  --rkt-space-20: 20px;
+  --rkt-space-24: 24px;
+  --rkt-space-32: 32px;
+  --rkt-space-36: 36px;
+  --rkt-space-40: 40px;
+  --rkt-space-48: 48px;
+  --rkt-space-80: 80px;
+  --rkt-space-88: 88px;
+  --rkt-space-96: 96px;
+  --rkt-space-140: 140px;
+
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+
+  --rkt-radius-6: 6px;      /* Dropdown items, small components */
+  --rkt-radius-12: 12px;    /* Cards, medium components */
+  --rkt-radius-16: 16px;    /* Buttons, color swatches */
+  --rkt-radius-24: 24px;    /* Chips (pill shape) */
+  --rkt-radius-48: 48px;    /* Large radius */
+  --rkt-radius-full: 9999px; /* Fully rounded (pills) */
+
+  /* ============================================
+     ELEVATION (SHADOWS)
+     Official Nova elevation system - 6 levels (0-5)
+     Extracted from Figma Nova Foundations Library
+     ============================================ */
+
+  --rkt-elevation-0: none;                                         /* Level 0 - No shadow (default) */
+  --rkt-elevation-1: 0 10px 20px 0 rgba(0, 0, 0, 0.02);           /* Level 1 - 2% opacity */
+  --rkt-elevation-2: 0 10px 12px 0 rgba(0, 0, 0, 0.05);           /* Level 2 - 5% opacity */
+  --rkt-elevation-3: 0 10px 30px 0 rgba(0, 0, 0, 0.08);           /* Level 3 - 8% opacity */
+  --rkt-elevation-4: 0 10px 30px 0 rgba(0, 0, 0, 0.10);           /* Level 4 - 10% opacity */
+  --rkt-elevation-5: 0 10px 30px 0 rgba(0, 0, 0, 0.12);           /* Level 5 - 12% opacity (dialogs) */
+
+  /* ============================================
+     COMPONENT-SPECIFIC
+     ============================================ */
+
+  /* Dropdown */
+  --rkt-dropdown-row-height: 16px;
+  --rkt-dropdown-row-padding: 10px;
+  --rkt-dropdown-row-gap: 12px;
+
+  /* Form Fields */
+  --rkt-form-field-gap: 8px;
+
+  /* Borders */
+  --rkt-border-width-thin: 1px;
+  --rkt-border-width-focus: 3px;
+
+  /* Background Blur */
+  --rkt-blur-radius: 32px;
+}
+
+/* ============================================
+   UTILITY CLASSES - SPACING
+   ============================================ */
+
+.rkt-Spacing--mb8 { margin-bottom: var(--rkt-space-8); }
+.rkt-Spacing--mb12 { margin-bottom: var(--rkt-space-12); }
+.rkt-Spacing--mb16 { margin-bottom: var(--rkt-space-16); }
+.rkt-Spacing--mb24 { margin-bottom: var(--rkt-space-24); }
+
+.rkt-Spacing--mt8 { margin-top: var(--rkt-space-8); }
+.rkt-Spacing--mt12 { margin-top: var(--rkt-space-12); }
+.rkt-Spacing--mt16 { margin-top: var(--rkt-space-16); }
+.rkt-Spacing--mt24 { margin-top: var(--rkt-space-24); }
+
+/* ============================================
+   COMPONENT CLASSES - BUTTONS
+   ============================================ */
+
+.rkt-Button {
+  font-family: var(--rkt-font-family-primary);
+  font-size: var(--rkt-font-size-16);
+  font-weight: var(--rkt-font-weight-medium);
+  line-height: var(--rkt-line-height-24);
+  padding: var(--rkt-space-12) var(--rkt-space-20);
+  border-radius: var(--rkt-radius-6);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rkt-Button--primary {
+  background-color: var(--rkt-brand-500);
+  color: var(--rkt-text-on-dark);
+  box-shadow: var(--rkt-elevation-1);
+}
+
+.rkt-Button--primary:hover {
+  background-color: var(--rkt-brand-500);
+  filter: brightness(0.9);
+  box-shadow: var(--rkt-elevation-2);
+}
+
+.rkt-Button--primary:focus-visible {
+  outline: var(--rkt-border-width-focus) solid var(--rkt-border-primary);
+  outline-offset: 2px;
+}
+
+.rkt-Button--secondary {
+  background-color: transparent;
+  color: var(--rkt-text-primary);
+  border: var(--rkt-border-width-thin) solid var(--rkt-border-emphasis);
+}
+
+.rkt-Button--secondary:hover {
+  background-color: var(--rkt-hover-tertiary);
+}
+
+/* ============================================
+   COMPONENT CLASSES - CHIPS
+   ============================================ */
+
+.rkt-Chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rkt-space-4);
+  padding: var(--rkt-space-8) var(--rkt-space-14);
+  min-height: 32px;
+  background-color: var(--rkt-bg-primary);
+  border: var(--rkt-border-width-thin) solid var(--rkt-border-emphasis);
+  border-radius: var(--rkt-radius-24);
+  font-family: var(--rkt-font-family-primary);
+  font-size: var(--rkt-font-size-14);
+  font-weight: var(--rkt-font-weight-medium);
+  line-height: normal;
+  color: var(--rkt-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rkt-Chip:hover {
+  background-color: var(--rkt-hover-tertiary);
+}
+
+.rkt-Chip--is-selected,
+.rkt-Chip.selected {
+  background-color: var(--rkt-success-bg);
+  border-color: var(--rkt-success-border);
+  color: var(--rkt-text-tag-success);
+}
+
+/* ============================================
+   COMPONENT CLASSES - CARDS
+   ============================================ */
+
+.rkt-Card {
+  background-color: var(--rkt-bg-primary);
+  border-radius: var(--rkt-radius-12);
+  padding: var(--rkt-space-20);
+  box-shadow: var(--rkt-elevation-2);
+}
+
+.rkt-Card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--rkt-space-8);
+  margin-bottom: var(--rkt-space-16);
+  font-family: var(--rkt-font-family-primary);
+  font-size: var(--rkt-font-size-20);
+  font-weight: var(--rkt-font-weight-medium);
+  color: var(--rkt-text-primary);
+}
+
+.rkt-Card__content {
+  font-family: var(--rkt-font-family-regular);
+  font-size: var(--rkt-font-size-16);
+  color: var(--rkt-text-primary);
+  line-height: var(--rkt-line-height-24);
+}
+
+.rkt-Card__subtitle {
+  font-family: var(--rkt-font-family-regular);
+  font-size: var(--rkt-font-size-14);
+  color: var(--rkt-text-subtle);
+  line-height: var(--rkt-line-height-24);
+}
+
+.rkt-Card__value {
+  font-family: var(--rkt-font-family-demibold);
+  font-size: var(--rkt-font-size-36);
+  font-weight: var(--rkt-font-weight-demibold);
+  color: var(--rkt-brand-500);
+  line-height: var(--rkt-line-height-44);
+  letter-spacing: var(--rkt-letter-spacing-headings);
+}
+
+.rkt-Card--tall {
+  padding: var(--rkt-space-24);
+}
+
+/* ============================================
+   COMPONENT CLASSES - BADGES
+   ============================================ */
+
+.rkt-Badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--rkt-space-4) var(--rkt-space-12);
+  border-radius: var(--rkt-radius-12);
+  font-family: var(--rkt-font-family-primary);
+  font-size: var(--rkt-font-size-14);
+  font-weight: var(--rkt-font-weight-medium);
+  line-height: var(--rkt-line-height-24);
+}
+
+.rkt-Badge--success {
+  background-color: var(--rkt-success-bg);
+  color: var(--rkt-success-primary);
+  border: var(--rkt-border-width-thin) solid var(--rkt-success-border);
+}
+
+.rkt-Badge--warning {
+  background-color: var(--rkt-warning-bg);
+  color: var(--rkt-warning-primary);
+  border: var(--rkt-border-width-thin) solid var(--rkt-warning-border);
+}
+
+.rkt-Badge--info {
+  background-color: var(--rkt-info-bg);
+  color: var(--rkt-info-primary);
+  border: var(--rkt-border-width-thin) solid var(--rkt-info-border);
+}
+
+/* ============================================
+   COMPONENT CLASSES - CONFIDENCE METER
+   ============================================ */
+
+.rkt-ConfidenceMeter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rkt-space-8);
+}
+
+.rkt-ConfidenceMeter__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rkt-ConfidenceMeter__label {
+  font-family: var(--rkt-font-family-regular);
+  font-size: var(--rkt-font-size-14);
+  color: var(--rkt-text-subtle);
+}
+
+.rkt-ConfidenceMeter__value {
+  font-family: var(--rkt-font-family-primary);
+  font-size: var(--rkt-font-size-16);
+  font-weight: var(--rkt-font-weight-medium);
+  color: var(--rkt-text-primary);
+}
+
+.rkt-ConfidenceMeter__track {
+  height: 8px;
+  background-color: var(--rkt-bg-tertiary);
+  border-radius: var(--rkt-radius-full);
+  overflow: hidden;
+}
+
+.rkt-ConfidenceMeter__fill {
+  height: 100%;
+  background-color: var(--rkt-success-primary);
+  border-radius: var(--rkt-radius-full);
+  transition: width 0.3s ease;
+}
+
+.rkt-ConfidenceMeter__message {
+  font-family: var(--rkt-font-family-regular);
+  font-size: var(--rkt-font-size-12);
+  color: var(--rkt-text-subtle);
+}
+
+/* ============================================
+   COMPONENT CLASSES - ELEVATION
+   ============================================ */
+
+.rkt-Elevation-0 {
+  box-shadow: var(--rkt-elevation-0);
+}
+
+.rkt-Elevation-1 {
+  box-shadow: var(--rkt-elevation-1);
+}
+
+.rkt-Elevation-2 {
+  box-shadow: var(--rkt-elevation-2);
+}
+
+.rkt-Elevation-3 {
+  box-shadow: var(--rkt-elevation-3);
+}
+
+.rkt-Elevation-4 {
+  box-shadow: var(--rkt-elevation-4);
+}
+
+.rkt-Elevation-5 {
+  box-shadow: var(--rkt-elevation-5);
+}
+
+/* ============================================
+   COMPONENT CLASSES - ICON
+   ============================================ */
+
+.rkt-Icon {
+  color: var(--rkt-icon-primary);
+  font-size: var(--rkt-font-size-20);
+}
+
+.rkt-Icon--secondary {
+  color: var(--rkt-icon-secondary);
+}
+
+.rkt-Icon--on-dark {
+  color: var(--rkt-icon-on-dark);
+}

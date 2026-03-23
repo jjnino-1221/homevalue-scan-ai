@@ -64,22 +64,6 @@ function ensureInitialized() {
   }
 }
 
-// Convert simple markdown to HTML
-function convertMarkdownToHTML(text) {
-  if (!text) return '';
-
-  // Convert **bold** to <strong>
-  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-
-  // Convert *italic* to <em>
-  text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-
-  // Convert newlines to <br>
-  text = text.replace(/\n/g, '<br>');
-
-  return text;
-}
-
 // Append message to chat
 export function appendMessage(role, content, cardData = null) {
   ensureInitialized();
@@ -90,10 +74,7 @@ export function appendMessage(role, content, cardData = null) {
 
   const bubbleDiv = document.createElement('div');
   bubbleDiv.className = 'message-bubble';
-
-  // Convert markdown to HTML for proper rendering
-  const htmlContent = convertMarkdownToHTML(content);
-  bubbleDiv.innerHTML = htmlContent;
+  bubbleDiv.textContent = content;
 
   messageDiv.appendChild(bubbleDiv);
 
@@ -350,10 +331,6 @@ function handleSendMessage() {
 
 // Append rich result card (valuation, comparables, recommendations)
 export function appendResultCard(cardType, cardData) {
-  console.log('DEBUG: appendResultCard called with type:', cardType);
-  console.log('  currentMessageElement exists:', !!currentMessageElement);
-  console.log('  cardData:', cardData);
-
   if (!currentMessageElement) {
     console.warn('No current message to append card to');
     return;
@@ -362,16 +339,13 @@ export function appendResultCard(cardType, cardData) {
   let card;
   switch (cardType) {
     case 'valuation_result_card':
-      console.log('DEBUG: Rendering valuation card');
       card = ResultCards.renderValuationCard(cardData);
       break;
     case 'comparables_cards':
-      console.log('DEBUG: Rendering comparables cards');
       card = ResultCards.renderComparablesCards(cardData);
       break;
     case 'recommendations_cards':
-      console.log('DEBUG: Rendering recommendations cards');
-      card = ResultCards.renderRecommendationsCards(cardData.summary, cardData.recommendations);
+      card = ResultCards.renderRecommendationsCards(cardData.summary, cardData.data);
       break;
     case 'pdf_download':
       card = ResultCards.renderPDFDownload(cardData.url);
@@ -382,11 +356,8 @@ export function appendResultCard(cardType, cardData) {
   }
 
   if (card) {
-    console.log('DEBUG: Card rendered successfully, appending to message');
     currentMessageElement.appendChild(card);
     scrollToBottom();
-  } else {
-    console.warn('DEBUG: Card rendering returned null/undefined');
   }
 }
 

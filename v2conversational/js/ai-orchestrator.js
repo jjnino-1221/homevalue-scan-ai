@@ -3,6 +3,10 @@
 
 import { ChatInterface } from './chat-interface.js';
 import * as InteractiveUI from './interactive-ui.js';
+import { CameraModal } from './camera-modal.js';
+import * as V1Engines from './v1-engines-client.js';
+import { Config } from './config.js';
+import { ErrorTracker } from './error-tracker.js';
 
 // Conversation state
 let conversationState = {
@@ -131,6 +135,12 @@ export async function sendMessage(userMessage) {
     });
 
     ChatInterface.appendMessage('user', userMessage);
+
+    // Track user action
+    ErrorTracker.addBreadcrumb('user_action', 'User sent message', {
+      messageLength: userMessage.length,
+      messageCount: conversationState.messages.length
+    });
   }
 
   // Show typing indicator
@@ -144,7 +154,10 @@ export async function sendMessage(userMessage) {
     }));
 
     // Use fetch with streaming (not EventSource - POST required)
-    const response = await fetch('http://localhost:3000/api/chat', {
+    const apiUrl = Config.getApiUrl(Config.get('api.chatEndpoint'));
+    Config.log('debug', 'Sending chat request', { url: apiUrl, messageCount: apiMessages.length });
+
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -206,8 +219,17 @@ export async function sendMessage(userMessage) {
           ChatInterface.appendToCurrentMessage(data.text);
         }
         else if (data.type === 'ui_pattern') {
-          // Render interactive UI element
-          ChatInterface.appendInteractiveUI(data.data);
+          // Check if it's a rich card type (valuation, comparables, recommendations)
+          if (data.data.type === 'valuation_result_card' ||
+              data.data.type === 'comparables_cards' ||
+              data.data.type === 'recommendations_cards' ||
+              data.data.type === 'pdf_download') {
+            // Render rich result card
+            ChatInterface.appendResultCard(data.data.type, data.data.data || data.data);
+          } else {
+            // Render regular interactive UI element (chips, sliders, etc.)
+            ChatInterface.appendInteractiveUI(data.data);
+          }
         }
         else if (data.type === 'confidence') {
           // Show confidence meter
@@ -220,7 +242,13 @@ export async function sendMessage(userMessage) {
         else if (data.type === 'tool_use') {
           // Execute tool locally, then continue conversation
           ChatInterface.hideTypingIndicator();
-          console.log(`Tool called: ${data.tool.name}`, data.tool.input);
+          Config.log('info', `Tool called: ${data.tool.name}`, data.tool.input);
+
+          // Track tool execution
+          ErrorTracker.addBreadcrumb('tool_execution', `Executing tool: ${data.tool.name}`, {
+            toolName: data.tool.name,
+            hasInput: !!data.tool.input
+          });
 
           const toolResult = await executeTool(data.tool);
 
@@ -259,7 +287,14 @@ export async function sendMessage(userMessage) {
   } catch (error) {
     ChatInterface.hideTypingIndicator();
     ChatInterface.showError('Connection error. Please try again.');
-    console.error('Stream error:', error);
+    Config.log('error', 'Stream error', { error: error.message, stack: error.stack });
+
+    // Track error
+    ErrorTracker.captureError(error, {
+      type: 'api_stream_error',
+      messageCount: conversationState.messages.length,
+      stage: conversationState.stage
+    }, ErrorTracker.SEVERITY.ERROR);
   }
 }
 
@@ -270,44 +305,74 @@ async function executeTool(tool) {
       return extractPropertyData(tool.input);
 
     case 'request_photo_capture':
-      // TODO: Open camera modal in Phase 3
-      console.log('Camera modal would open for:', tool.input.room_type);
-      return { status: 'modal_opened', room: tool.input.room_type };
+      // Open camera modal and wait for photos
+      return new Promise((resolve) => {
+        CameraModal.onPhotosCaptured((photos, roomType) => {
+          // Store photos in conversation state
+          conversationState.photos.push({
+            roomType: roomType,
+            photos: photos,
+            timestamp: new Date().toISOString()
+          });
+
+          // Save state
+          saveConversationState();
+
+          // Return tool result
+          resolve({
+            status: 'completed',
+            room: roomType,
+            photoCount: photos.length,
+            skipped: photos.length === 0
+          });
+        });
+
+        // Open the modal
+        CameraModal.open(tool.input.room_type, tool.input.instruction);
+      });
 
     case 'calculate_property_valuation':
-      // TODO: Call V1 ValuationEngine in Phase 4
+      // Call V1 ValuationEngine
       console.log('Calculating valuation for:', tool.input.property_data);
-      const mockValuation = {
-        estimate: 285000,
-        rangeLow: 270000,
-        rangeHigh: 300000,
-        confidence: 0.85,
-        comparables: []
-      };
-      conversationState.valuation = mockValuation;
-      return mockValuation;
+
+      const valuationResult = await V1Engines.calculateValuation({
+        property_data: tool.input.property_data || conversationState.propertyData,
+        photos: tool.input.photos || conversationState.photos
+      });
+
+      // Store valuation in conversation state
+      conversationState.valuation = valuationResult;
+
+      return valuationResult;
 
     case 'generate_improvement_recommendations':
-      // TODO: Call V1 RecommendationEngine in Phase 4
+      // Call V1 RecommendationEngine
       console.log('Generating recommendations');
-      const mockRecommendations = [
-        {
-          id: generateUUID(),
-          category: 'curb_appeal',
-          priority: 'high',
-          title: 'Exterior Paint',
-          description: 'Fresh paint increases curb appeal',
-          costRange: { min: 3000, max: 6000 },
-          impactScore: 85,
-          roiEstimate: 1.5
-        }
-      ];
-      conversationState.recommendations = mockRecommendations;
-      return { recommendations: mockRecommendations };
+
+      const recommendationResult = await V1Engines.generateRecommendations({
+        property_data: tool.input.property_data || conversationState.propertyData,
+        photos: conversationState.photos,
+        valuation: tool.input.valuation || conversationState.valuation
+      });
+
+      // Store recommendations in conversation state
+      if (recommendationResult.success) {
+        conversationState.recommendations = recommendationResult.recommendations;
+      }
+
+      return recommendationResult;
 
     case 'get_property_comparables':
-      // TODO: Fetch real comparables in Phase 4
+      // Return comparables from valuation (already generated by V1 engine)
       console.log('Fetching comparables for:', tool.input.address);
+
+      if (conversationState.valuation && conversationState.valuation.comparables) {
+        return {
+          comparables: conversationState.valuation.comparables
+        };
+      }
+
+      // If no valuation yet, return empty
       return { comparables: [] };
 
     default:
@@ -406,44 +471,62 @@ function extractPropertyData({ text, current_data = {} }) {
 
 // Save conversation state to localStorage
 function saveConversationState() {
+  if (!Config.get('storage.enabled')) {
+    Config.log('debug', 'Storage disabled, skipping save');
+    return;
+  }
+
   try {
     conversationState.metadata.lastUpdatedAt = new Date().toISOString();
-    const key = `rocket_valuation_v2_${conversationState.id}`;
+    const prefix = Config.get('storage.prefix', 'rocket_valuation_v2_');
+    const key = `${prefix}${conversationState.id}`;
     localStorage.setItem(key, JSON.stringify(conversationState));
-    console.log('Conversation saved:', key);
+    Config.log('debug', 'Conversation saved', { key, messageCount: conversationState.messages.length });
   } catch (error) {
     if (error.name === 'QuotaExceededError') {
-      console.error('Storage quota exceeded');
+      Config.log('error', 'Storage quota exceeded');
       ChatInterface.showError('Browser storage full. Please complete this valuation.');
     } else {
-      console.error('Error saving conversation:', error);
+      Config.log('error', 'Error saving conversation', error);
     }
   }
 }
 
 // Load conversation state from localStorage
 export function loadConversationState(conversationId) {
+  if (!Config.get('storage.enabled')) {
+    Config.log('debug', 'Storage disabled, skipping load');
+    return false;
+  }
+
   try {
-    const key = `rocket_valuation_v2_${conversationId}`;
+    const prefix = Config.get('storage.prefix', 'rocket_valuation_v2_');
+    const key = `${prefix}${conversationId}`;
     const saved = localStorage.getItem(key);
     if (saved) {
       conversationState = JSON.parse(saved);
-      console.log('Conversation loaded:', key);
+      Config.log('info', 'Conversation loaded', { key, messageCount: conversationState.messages.length });
       return true;
     }
   } catch (error) {
-    console.error('Error loading conversation:', error);
+    Config.log('error', 'Error loading conversation', error);
   }
   return false;
 }
 
 // Check for recent conversation to resume
 export function checkForResumeConversation() {
-  const keys = Object.keys(localStorage).filter(k => k.startsWith('rocket_valuation_v2_'));
+  if (!Config.get('storage.enabled')) {
+    return null;
+  }
+
+  const prefix = Config.get('storage.prefix', 'rocket_valuation_v2_');
+  const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix));
 
   if (keys.length === 0) return null;
 
-  // Find most recent conversation < 24 hours old
+  // Find most recent conversation within TTL
+  const ttl = Config.get('storage.ttl', 24 * 60 * 60 * 1000); // Default 24 hours
   const conversations = keys.map(key => {
     try {
       const data = JSON.parse(localStorage.getItem(key));
@@ -456,9 +539,13 @@ export function checkForResumeConversation() {
   const recent = conversations
     .filter(c => {
       const age = Date.now() - new Date(c.data.metadata.lastUpdatedAt).getTime();
-      return age < 24 * 60 * 60 * 1000; // < 24 hours
+      return age < ttl;
     })
     .sort((a, b) => new Date(b.data.metadata.lastUpdatedAt) - new Date(a.data.metadata.lastUpdatedAt))[0];
+
+  if (recent) {
+    Config.log('info', 'Found recent conversation to resume', { id: recent.data.id });
+  }
 
   return recent ? recent.data : null;
 }
@@ -482,8 +569,10 @@ export function startNewConversation() {
     }
   };
 
-  // Send initial greeting
-  sendMessage('');
+  // Don't auto-send initial greeting - wait for user to engage
+  // sendMessage('');
+
+  Config.log('info', 'New conversation initialized', { id: conversationState.id });
 }
 
 // Get current conversation state
@@ -510,9 +599,158 @@ function getBrowserInfo() {
   return 'Unknown';
 }
 
+// Send message with custom display text (for chip selections)
+export async function sendMessageWithDisplay(valueToSend, displayText) {
+  // Add message to conversation with VALUE (for API pattern matching)
+  conversationState.messages.push({
+    role: 'user',
+    content: valueToSend,
+    timestamp: new Date().toISOString()
+  });
+
+  // But show DISPLAY TEXT in UI (user-friendly)
+  ChatInterface.appendMessage('user', displayText);
+
+  // Track user action
+  ErrorTracker.addBreadcrumb('user_action', 'User selected option', {
+    value: valueToSend,
+    display: displayText,
+    messageCount: conversationState.messages.length
+  });
+
+  // Show typing indicator
+  ChatInterface.showTypingIndicator();
+
+  try {
+    // Prepare messages for API (using actual values)
+    const apiMessages = conversationState.messages.map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+
+    // Send to API
+    const apiUrl = Config.getApiUrl('/api/chat');
+    Config.log('debug', 'Sending to API', { messageCount: apiMessages.length, lastMessage: valueToSend });
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: apiMessages,
+        tools: tools
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    // Process streaming response (same as sendMessage)
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let currentAssistantMessage = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (!line.trim() || !line.startsWith('data: ')) continue;
+
+        const dataStr = line.slice(6);
+        if (dataStr === '[DONE]') {
+          if (currentAssistantMessage) {
+            conversationState.messages.push({
+              role: 'assistant',
+              content: currentAssistantMessage,
+              timestamp: new Date().toISOString()
+            });
+          }
+          ChatInterface.hideTypingIndicator();
+          saveConversationState();
+          return;
+        }
+
+        const data = JSON.parse(dataStr);
+
+        if (data.type === 'progress') {
+          InteractiveUI.updateProgress(data.data);
+        }
+        else if (data.type === 'text') {
+          currentAssistantMessage += data.text;
+          ChatInterface.appendToCurrentMessage(data.text);
+        }
+        else if (data.type === 'ui_pattern') {
+          ChatInterface.appendInteractiveUI(data.data);
+        }
+        else if (data.type === 'confidence') {
+          ChatInterface.appendConfidenceMeter(data.data);
+        }
+        else if (data.type === 'completion') {
+          ChatInterface.appendCompletionBadge(data.message);
+        }
+        else if (data.type === 'tool_use') {
+          ChatInterface.hideTypingIndicator();
+          Config.log('info', `Tool called: ${data.tool.name}`, data.tool.input);
+
+          ErrorTracker.addBreadcrumb('tool_execution', `Executing tool: ${data.tool.name}`, {
+            toolName: data.tool.name,
+            hasInput: !!data.tool.input
+          });
+
+          const toolResult = await executeTool(data.tool);
+
+          conversationState.messages.push({
+            role: 'assistant',
+            content: [
+              { type: 'text', text: currentAssistantMessage },
+              { type: 'tool_use', id: data.tool.id, name: data.tool.name, input: data.tool.input }
+            ],
+            timestamp: new Date().toISOString()
+          });
+
+          conversationState.messages.push({
+            role: 'user',
+            content: [
+              {
+                type: 'tool_result',
+                tool_use_id: data.tool.id,
+                content: JSON.stringify(toolResult)
+              }
+            ],
+            timestamp: new Date().toISOString()
+          });
+
+          saveConversationState();
+          return sendMessage('');
+        }
+        else if (data.type === 'error') {
+          throw new Error(data.error);
+        }
+      }
+    }
+  } catch (error) {
+    ChatInterface.hideTypingIndicator();
+    ChatInterface.showError('Connection error. Please try again.');
+    Config.log('error', 'Stream error', { error: error.message, stack: error.stack });
+
+    ErrorTracker.captureError(error, {
+      type: 'api_stream_error',
+      messageCount: conversationState.messages.length,
+      stage: conversationState.stage
+    }, ErrorTracker.SEVERITY.ERROR);
+  }
+}
+
 // Initialize on load
 window.AIOrchestrator = {
   sendMessage,
+  sendMessageWithDisplay,
   startNewConversation,
   loadConversationState,
   checkForResumeConversation,

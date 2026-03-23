@@ -1,44 +1,17 @@
 // Camera Modal - Photo capture overlay with AI guidance
 // Phase 3 Implementation - Camera access, photo capture, and storage
 
-// DOM elements - initialized after DOM ready
-let modal;
-let video;
-let canvas;
-let captureButton;
-let continueButton;
-let skipButton;
-let closeButton;
-let thumbnailsContainer;
-let roomTitle;
-let guidanceText;
-let photoCount;
-
-let isInitialized = false;
-
-// Initialize DOM references
-function initializeDOMReferences() {
-  if (isInitialized) return;
-  modal = document.getElementById('cameraModal');
-  video = document.getElementById('cameraPreview');
-  canvas = document.getElementById('photoCanvas');
-  captureButton = document.getElementById('captureButton');
-  continueButton = document.getElementById('continueButton');
-  skipButton = document.getElementById('skipButton');
-  closeButton = document.getElementById('closeModal');
-  thumbnailsContainer = document.getElementById('thumbnails');
-  roomTitle = document.getElementById('roomTitle');
-  guidanceText = document.getElementById('guidanceText');
-  photoCount = document.getElementById('photoCount');
-  if (modal && video && canvas) {
-    captureButton.addEventListener('click', capturePhoto);
-    continueButton.addEventListener('click', handleContinue);
-    skipButton.addEventListener('click', handleSkip);
-    closeButton.addEventListener('click', close);
-    isInitialized = True;
-    print('CameraModal initialized')
-  }
-}
+let modal = document.getElementById('cameraModal');
+let video = document.getElementById('cameraPreview');
+let canvas = document.getElementById('photoCanvas');
+let captureButton = document.getElementById('captureButton');
+let continueButton = document.getElementById('continueButton');
+let skipButton = document.getElementById('skipButton');
+let closeButton = document.getElementById('closeModal');
+let thumbnailsContainer = document.getElementById('thumbnails');
+let roomTitle = document.getElementById('roomTitle');
+let guidanceText = document.getElementById('guidanceText');
+let photoCount = document.getElementById('photoCount');
 
 let mediaStream = null;
 let capturedPhotos = [];
@@ -98,14 +71,6 @@ const ROOM_GUIDANCE = {
 
 // Open camera modal
 async function open(roomType, instruction) {
-  if (!isInitialized) {
-    initializeDOMReferences();
-  }
-  if (!modal) {
-    console.error('CameraModal: Cannot open - DOM not available');
-    return;
-  }
-
   currentRoomType = roomType;
   currentInstruction = instruction;
   capturedPhotos = [];
@@ -340,12 +305,11 @@ function generatePhotoId() {
   return `photo_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 }
 
-// Auto-initialize when DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeDOMReferences);
-} else {
-  initializeDOMReferences();
-}
+// Event listeners
+captureButton.addEventListener('click', capturePhoto);
+continueButton.addEventListener('click', handleContinue);
+skipButton.addEventListener('click', handleSkip);
+closeButton.addEventListener('click', close);
 
 // Export camera modal interface
 export const CameraModal = {

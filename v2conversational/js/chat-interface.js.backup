@@ -5,95 +5,22 @@ import * as InteractiveUI from './interactive-ui.js';
 import * as ResultCards from './result-cards.js';
 import { Security } from './security.js';
 
-// DOM elements - will be initialized after DOM is ready
-let messagesContainer;
-let messageInput;
-let sendButton;
-let typingIndicator;
+const messagesContainer = document.getElementById('messagesContainer');
+const messageInput = document.getElementById('messageInput');
+const sendButton = document.getElementById('sendButton');
+const typingIndicator = document.getElementById('typingIndicator');
 
 let currentMessageElement = null;
 let currentInteractiveContainer = null;
-let isInitialized = false;
-
-// Initialize DOM references (call this after DOMContentLoaded)
-function initializeDOMReferences() {
-  if (isInitialized) return true;
-
-  messagesContainer = document.getElementById('messagesContainer');
-  messageInput = document.getElementById('messageInput');
-  sendButton = document.getElementById('sendButton');
-  typingIndicator = document.getElementById('typingIndicator');
-
-  if (!messagesContainer || !messageInput || !sendButton || !typingIndicator) {
-    console.error('ChatInterface: Required DOM elements not found');
-    return false;
-  }
-
-  // Set up event listeners
-  setupEventListeners();
-
-  isInitialized = true;
-  console.log('ChatInterface initialized successfully');
-  return true;
-}
-
-// Set up event listeners (called once during initialization)
-function setupEventListeners() {
-  // Handle send button click
-  sendButton.addEventListener('click', handleSendMessage);
-
-  // Handle Enter key in input
-  messageInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  });
-
-  // Auto-resize textarea
-  messageInput.addEventListener('input', () => {
-    messageInput.style.height = 'auto';
-    messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
-  });
-}
-
-// Ensure initialized before operations
-function ensureInitialized() {
-  if (!isInitialized) {
-    initializeDOMReferences();
-  }
-}
-
-// Convert simple markdown to HTML
-function convertMarkdownToHTML(text) {
-  if (!text) return '';
-
-  // Convert **bold** to <strong>
-  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-
-  // Convert *italic* to <em>
-  text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-
-  // Convert newlines to <br>
-  text = text.replace(/\n/g, '<br>');
-
-  return text;
-}
 
 // Append message to chat
 export function appendMessage(role, content, cardData = null) {
-  ensureInitialized();
-  if (!messagesContainer) return;
-
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${role}`;
 
   const bubbleDiv = document.createElement('div');
   bubbleDiv.className = 'message-bubble';
-
-  // Convert markdown to HTML for proper rendering
-  const htmlContent = convertMarkdownToHTML(content);
-  bubbleDiv.innerHTML = htmlContent;
+  bubbleDiv.textContent = content;
 
   messageDiv.appendChild(bubbleDiv);
 
@@ -116,9 +43,6 @@ export function appendMessage(role, content, cardData = null) {
 
 // Append text to current message (for streaming)
 export function appendToCurrentMessage(text) {
-  ensureInitialized();
-  if (!messagesContainer) return;
-
   if (!currentMessageElement) {
     // Create new assistant message if none exists
     const messageDiv = document.createElement('div');
@@ -139,7 +63,6 @@ export function appendToCurrentMessage(text) {
 
 // Append interactive UI pattern to current message
 export function appendInteractiveUI(pattern) {
-  ensureInitialized();
   if (!currentMessageElement) {
     console.warn('No current message to append interactive UI to');
     return;
@@ -254,9 +177,6 @@ function createMessageCard(cardData) {
 
 // Show typing indicator
 export function showTypingIndicator() {
-  ensureInitialized();
-  if (!typingIndicator) return;
-
   typingIndicator.style.display = 'block';
   currentMessageElement = null; // Reset for new message
   scrollToBottom();
@@ -264,17 +184,11 @@ export function showTypingIndicator() {
 
 // Hide typing indicator
 export function hideTypingIndicator() {
-  ensureInitialized();
-  if (!typingIndicator) return;
-
   typingIndicator.style.display = 'none';
 }
 
 // Show error message
 export function showError(message) {
-  ensureInitialized();
-  if (!messagesContainer) return;
-
   const errorDiv = document.createElement('div');
   errorDiv.className = 'system-message';
   errorDiv.style.color = 'var(--error-color)';
@@ -285,9 +199,6 @@ export function showError(message) {
 
 // Show system message
 export function showSystemMessage(message) {
-  ensureInitialized();
-  if (!messagesContainer) return;
-
   const systemDiv = document.createElement('div');
   systemDiv.className = 'system-message';
   systemDiv.textContent = message;
@@ -297,8 +208,6 @@ export function showSystemMessage(message) {
 
 // Scroll to bottom of messages
 export function scrollToBottom() {
-  if (!messagesContainer) return;
-
   setTimeout(() => {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }, 0);
@@ -306,9 +215,6 @@ export function scrollToBottom() {
 
 // Clear all messages
 export function clearMessages() {
-  ensureInitialized();
-  if (!messagesContainer) return;
-
   messagesContainer.innerHTML = '';
   currentMessageElement = null;
 }
@@ -327,6 +233,23 @@ function sanitizeUserInput(text) {
 
   return sanitized;
 }
+
+// Handle send button click
+sendButton.addEventListener('click', handleSendMessage);
+
+// Handle Enter key in input
+messageInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSendMessage();
+  }
+});
+
+// Auto-resize textarea
+messageInput.addEventListener('input', () => {
+  messageInput.style.height = 'auto';
+  messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+});
 
 // Handle sending message
 function handleSendMessage() {
@@ -350,10 +273,6 @@ function handleSendMessage() {
 
 // Append rich result card (valuation, comparables, recommendations)
 export function appendResultCard(cardType, cardData) {
-  console.log('DEBUG: appendResultCard called with type:', cardType);
-  console.log('  currentMessageElement exists:', !!currentMessageElement);
-  console.log('  cardData:', cardData);
-
   if (!currentMessageElement) {
     console.warn('No current message to append card to');
     return;
@@ -362,16 +281,13 @@ export function appendResultCard(cardType, cardData) {
   let card;
   switch (cardType) {
     case 'valuation_result_card':
-      console.log('DEBUG: Rendering valuation card');
       card = ResultCards.renderValuationCard(cardData);
       break;
     case 'comparables_cards':
-      console.log('DEBUG: Rendering comparables cards');
       card = ResultCards.renderComparablesCards(cardData);
       break;
     case 'recommendations_cards':
-      console.log('DEBUG: Rendering recommendations cards');
-      card = ResultCards.renderRecommendationsCards(cardData.summary, cardData.recommendations);
+      card = ResultCards.renderRecommendationsCards(cardData.summary, cardData.data);
       break;
     case 'pdf_download':
       card = ResultCards.renderPDFDownload(cardData.url);
@@ -382,17 +298,13 @@ export function appendResultCard(cardType, cardData) {
   }
 
   if (card) {
-    console.log('DEBUG: Card rendered successfully, appending to message');
     currentMessageElement.appendChild(card);
     scrollToBottom();
-  } else {
-    console.warn('DEBUG: Card rendering returned null/undefined');
   }
 }
 
 // Export interface
 export const ChatInterface = {
-  initialize: initializeDOMReferences, // Expose initialization function
   appendMessage,
   appendToCurrentMessage,
   appendInteractiveUI,
@@ -406,14 +318,6 @@ export const ChatInterface = {
   scrollToBottom,
   clearMessages
 };
-
-// Auto-initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeDOMReferences);
-} else {
-  // DOM already loaded
-  initializeDOMReferences();
-}
 
 // Make available globally
 window.ChatInterface = ChatInterface;

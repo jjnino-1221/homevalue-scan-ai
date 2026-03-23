@@ -4,123 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rocket Valuation - AI Property Consultant</title>
-    <link rel="stylesheet" href="css/chat.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .landing-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 64px;
+            margin-bottom: 24px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #111111;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #666666;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .cta-button {
+            background: #DE3341;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 18px 48px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(222, 51, 65, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: #590213;
+            box-shadow: 0 6px 20px rgba(222, 51, 65, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        .features {
+            display: flex;
+            gap: 24px;
+            margin-top: 48px;
+            text-align: left;
+        }
+
+        .feature {
+            flex: 1;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111111;
+            margin-bottom: 8px;
+        }
+
+        .feature-text {
+            font-size: 14px;
+            color: #666666;
+            line-height: 1.4;
+        }
+
+        .trust-indicator {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #999999;
+        }
+
+        .demo-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #764ba2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 640px) {
+            .landing-container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .features {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .cta-button {
+                width: 100%;
+                padding: 16px 32px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Header -->
-        <header class="chat-header">
-            <div class="header-left">
-                <span class="logo">🏠</span>
-                <h1>Rocket Valuation</h1>
-            </div>
-            <div class="header-right">
-                <button id="voiceToggle" class="icon-button" title="Voice input">
-                    <span class="icon">🎤</span>
-                </button>
-                <button id="profileButton" class="icon-button" title="Profile">
-                    <span class="icon">👤</span>
-                </button>
-            </div>
-        </header>
+    <!-- Demo Badge -->
+    <div class="demo-badge">V2 Conversational Demo</div>
 
-        <!-- Progress Indicator -->
-        <div id="progressContainer" class="progress-container" style="display: none;">
-            <div class="progress-header">
-                <span class="progress-title" id="progressTitle">Getting Started</span>
-                <span class="progress-steps" id="progressSteps">Step 1 of 5</span>
+    <!-- Landing Content -->
+    <div class="landing-container">
+        <div class="logo">🏠</div>
+
+        <h1>Let's Evaluate Your Property</h1>
+
+        <p class="subtitle">
+            Chat with our AI-powered property consultant to get an accurate estimate of your home's value in minutes.
+        </p>
+
+        <a href="chat.html" class="cta-button">Start Conversation</a>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <div class="feature-title">Conversational</div>
+                <div class="feature-text">Natural chat experience guides you step-by-step</div>
             </div>
-            <div class="progress-bar-track">
-                <div class="progress-bar-fill" id="progressBar" style="width: 20%;"></div>
+
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Fast</div>
+                <div class="feature-text">Get results in minutes, not days</div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Accurate</div>
+                <div class="feature-text">AI-powered with local market data</div>
             </div>
         </div>
 
-        <!-- Resume conversation banner (hidden by default) -->
-        <div id="resumeBanner" class="resume-banner" style="display: none;">
-            <p>Welcome back! Want to continue where you left off?</p>
-            <div class="resume-actions">
-                <button id="resumeButton" class="btn-primary">Resume Conversation</button>
-                <button id="startFreshButton" class="btn-secondary">Start Fresh</button>
-            </div>
-        </div>
-
-        <!-- Messages container -->
-        <main class="messages-container" id="messagesContainer">
-            <!-- Messages will be dynamically inserted here -->
-        </main>
-
-        <!-- Typing indicator (hidden by default) -->
-        <div id="typingIndicator" class="typing-indicator" style="display: none;">
-            <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-
-        <!-- Input area -->
-        <footer class="input-area">
-            <div class="input-wrapper">
-                <textarea
-                    id="messageInput"
-                    class="message-input"
-                    placeholder="Type your message..."
-                    rows="1"
-                ></textarea>
-                <button id="cameraButton" class="icon-button" title="Add photos">
-                    <span class="icon">📷</span>
-                </button>
-                <button id="sendButton" class="icon-button btn-send" title="Send message">
-                    <span class="icon">📤</span>
-                </button>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Camera Modal (hidden by default) -->
-    <div id="cameraModal" class="modal" style="display: none;">
-        <div class="modal-content camera-modal">
-            <div class="modal-header">
-                <button id="closeModal" class="close-button">✕</button>
-                <div class="photo-progress">
-                    <span id="photoCount">0/5 Photos</span>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="camera-viewfinder">
-                    <video id="cameraPreview" autoplay playsinline></video>
-                    <canvas id="photoCanvas" style="display: none;"></canvas>
-                    <button id="captureButton" class="capture-button">○ Capture Photo</button>
-                </div>
-                <div class="guidance-sidebar">
-                    <h3 id="roomTitle">📷 Room Photos</h3>
-                    <div id="guidanceText" class="guidance-text">
-                        <p>Capture your room from multiple angles.</p>
-                    </div>
-                    <div class="tips">
-                        <p><strong>Tips:</strong></p>
-                        <ul>
-                            <li>✓ Good lighting</li>
-                            <li>✓ Steady shots</li>
-                            <li>✓ Show condition clearly</li>
-                        </ul>
-                    </div>
-                    <div id="thumbnails" class="thumbnails"></div>
-                    <div class="modal-actions">
-                        <button id="continueButton" class="btn-primary" disabled>Continue</button>
-                        <button id="skipButton" class="btn-secondary">Skip Room</button>
-                    </div>
-                </div>
-            </div>
+        <div class="trust-indicator">
+            Powered by Claude AI • Free to Use • Takes 5-10 Minutes
         </div>
     </div>
-
-    <!-- Scripts - Load in order -->
-    <script type="module" src="js/interactive-ui.js"></script>
-    <script type="module" src="js/chat-interface.js"></script>
-    <script type="module" src="js/voice-handler.js"></script>
-    <script type="module" src="js/camera-modal.js"></script>
-    <script type="module" src="js/ai-orchestrator.js"></script>
-    <script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Valuation - AI Property Consultant</title>
+    <!-- Nova Design System Tokens -->
+    <link rel="stylesheet" href="css/nova-tokens.css">
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-left">
+                <span class="logo">🏠</span>
+                <h1>Rocket Valuation</h1>
+            </div>
+            <div class="header-right">
+                <button id="voiceToggle" class="icon-button" title="Voice input">
+                    <span class="icon">🎤</span>
+                </button>
+                <button id="profileButton" class="icon-button" title="Profile">
+                    <span class="icon">👤</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Progress Indicator - RDS-aligned -->
+        <div id="progressContainer" class="progress-container rkt-ProgressContainer" style="display: none;">
+            <div class="progress-header rkt-ProgressContainer__header">
+                <span class="progress-title rkt-ProgressContainer__title" id="progressTitle">Getting Started</span>
+                <span class="progress-steps rkt-ProgressContainer__steps" id="progressSteps">Step 1 of 5</span>
+            </div>
+            <div class="progress-bar-track rkt-ProgressBar">
+                <div class="progress-bar-fill rkt-ProgressBar__fill" id="progressBar" style="width: 20%;"></div>
+            </div>
+        </div>
+
+        <!-- Resume conversation banner (hidden by default) -->
+        <div id="resumeBanner" class="resume-banner" style="display: none;">
+            <p>Welcome back! Want to continue where you left off?</p>
+            <div class="resume-actions">
+                <button id="resumeButton" class="btn-primary rkt-Button rkt-Button--primary">Resume Conversation</button>
+                <button id="startFreshButton" class="btn-secondary rkt-Button rkt-Button--secondary">Start Fresh</button>
+            </div>
+        </div>
+
+        <!-- Messages container -->
+        <main class="messages-container" id="messagesContainer">
+            <!-- Messages will be dynamically inserted here -->
+        </main>
+
+        <!-- Typing indicator (hidden by default) -->
+        <div id="typingIndicator" class="typing-indicator" style="display: none;">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Input area -->
+        <footer class="input-area">
+            <div class="input-wrapper">
+                <textarea
+                    id="messageInput"
+                    class="message-input"
+                    placeholder="Type your message..."
+                    rows="1"
+                ></textarea>
+                <button id="cameraButton" class="icon-button" title="Add photos">
+                    <span class="icon">📷</span>
+                </button>
+                <button id="sendButton" class="icon-button btn-send" title="Send message">
+                    <span class="icon">📤</span>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Camera Modal (hidden by default) - RDS-aligned -->
+    <div id="cameraModal" class="modal rkt-Modal" style="display: none;">
+        <div class="modal-content camera-modal rkt-Modal__content">
+            <div class="modal-header rkt-Modal__header">
+                <button id="closeModal" class="close-button rkt-Button--icon" aria-label="Close">✕</button>
+                <div class="photo-progress rkt-Modal__title">
+                    <span id="photoCount">0/5 Photos</span>
+                </div>
+            </div>
+            <div class="modal-body rkt-Modal__body">
+                <div class="camera-viewfinder">
+                    <video id="cameraPreview" autoplay playsinline aria-label="Camera preview"></video>
+                    <canvas id="photoCanvas" style="display: none;"></canvas>
+                    <button id="captureButton" class="capture-button rkt-Button rkt-Button--primary">○ Capture Photo</button>
+                </div>
+                <div class="guidance-sidebar rkt-Card">
+                    <h3 id="roomTitle" class="rkt-Card__heading">📷 Room Photos</h3>
+                    <div id="guidanceText" class="guidance-text rkt-Card__content">
+                        <p>Capture your room from multiple angles.</p>
+                    </div>
+                    <div class="tips rkt-Card rkt-Spacing--pa16">
+                        <p><strong>Tips:</strong></p>
+                        <ul>
+                            <li>✓ Good lighting</li>
+                            <li>✓ Steady shots</li>
+                            <li>✓ Show condition clearly</li>
+                        </ul>
+                    </div>
+                    <div id="thumbnails" class="thumbnails rkt-Spacing--mb12"></div>
+                    <div class="modal-actions">
+                        <button id="continueButton" class="btn-primary rkt-Button rkt-Button--primary" disabled>Continue</button>
+                        <button id="skipButton" class="btn-secondary rkt-Button rkt-Button--secondary">Skip Room</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts - Load in order -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/diagnostics.js"></script>
+    <script type="module" src="js/security.js"></script>
+    <script type="module" src="js/error-tracker.js"></script>
+    <script type="module" src="js/interactive-ui.js"></script>
+    <script type="module" src="js/result-cards.js"></script>
+    <script type="module" src="js/chat-interface.js"></script>
+    <script type="module" src="js/voice-handler.js"></script>
+    <script type="module" src="js/camera-modal.js"></script>
+    <!-- Use mock-orchestrator for UX testing (no external dependencies) -->
+    <script type="module" src="js/mock-orchestrator.js"></script>
+    <!-- <script type="module" src="js/ai-orchestrator.js"></script> -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

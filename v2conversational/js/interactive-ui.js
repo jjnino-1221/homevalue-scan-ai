@@ -6,7 +6,46 @@ export function renderChips(options, callback, multiSelect = false) {
   container.className = 'chip-group rkt-Chip-group';
 
   const selectedValues = new Set();
+  const selectedLabels = new Map(); // Track labels for display
 
+  // Create Done button early if multi-select (before chips)
+  let doneButton = null;
+  let updateDoneButton = null;
+
+  if (multiSelect) {
+    doneButton = document.createElement('button');
+    doneButton.className = 'chip-done-button rkt-Button--primary';
+    doneButton.textContent = 'Done';
+    doneButton.style.marginTop = '12px';
+    doneButton.style.display = 'none'; // Hidden until selection is made
+    doneButton.dataset.isDoneButton = 'true';
+
+    doneButton.addEventListener('click', () => {
+      console.log('DEBUG: Multi-select Done button clicked');
+      console.log('  selectedValues:', Array.from(selectedValues));
+      console.log('  selectedLabels:', Array.from(selectedLabels.values()));
+      if (selectedValues.size > 0) {
+        // Join values with commas for the API
+        const valueString = Array.from(selectedValues).join(',');
+        // Create display text from labels
+        const displayText = Array.from(selectedLabels.values()).join(', ');
+        console.log('DEBUG: Calling callback with:', valueString, displayText);
+        callback(valueString, displayText);
+      }
+    });
+
+    // Define updateDoneButton function now that doneButton exists
+    updateDoneButton = function() {
+      if (selectedValues.size > 0) {
+        doneButton.style.display = 'block';
+        doneButton.textContent = `Done (${selectedValues.size} selected)`;
+      } else {
+        doneButton.style.display = 'none';
+      }
+    };
+  }
+
+  // Now create the chips
   options.forEach(option => {
     const chip = document.createElement('button');
     chip.className = 'chip-button rkt-Chip';
@@ -15,15 +54,32 @@ export function renderChips(options, callback, multiSelect = false) {
 
     chip.addEventListener('click', () => {
       if (multiSelect) {
-        // Multi-select mode
+        // Special handling for "None" option - acts as single-select
+        if (option.value === 'imp_none' || option.label === 'None') {
+          console.log('DEBUG: "None" clicked in multi-select, acting as single-select');
+          // Clear all selections
+          container.querySelectorAll('.chip-button').forEach(btn => {
+            btn.classList.remove('selected', 'rkt-Chip--is-selected');
+          });
+          chip.classList.add('selected', 'rkt-Chip--is-selected');
+          // Immediately callback with "None"
+          callback(option.value, option.label);
+          return;
+        }
+
+        // Multi-select mode - toggle selection
         chip.classList.toggle('selected');
         chip.classList.toggle('rkt-Chip--is-selected');
         if (chip.classList.contains('selected')) {
           selectedValues.add(option.value);
+          selectedLabels.set(option.value, option.label);
         } else {
           selectedValues.delete(option.value);
+          selectedLabels.delete(option.value);
         }
-        callback(Array.from(selectedValues));
+
+        // Update or show the Done button
+        updateDoneButton();
       } else {
         // Single-select mode - remove previous selection
         container.querySelectorAll('.chip-button').forEach(btn => {
@@ -36,6 +92,11 @@ export function renderChips(options, callback, multiSelect = false) {
 
     container.appendChild(chip);
   });
+
+  // Add Done button to container if multi-select
+  if (multiSelect && doneButton) {
+    container.appendChild(doneButton);
+  }
 
   return container;
 }

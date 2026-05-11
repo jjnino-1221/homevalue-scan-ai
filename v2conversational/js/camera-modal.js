@@ -35,8 +35,8 @@ function initializeDOMReferences() {
     continueButton.addEventListener('click', handleContinue);
     skipButton.addEventListener('click', handleSkip);
     closeButton.addEventListener('click', close);
-    isInitialized = True;
-    print('CameraModal initialized')
+    isInitialized = true;
+    console.log('CameraModal initialized');
   }
 }
 

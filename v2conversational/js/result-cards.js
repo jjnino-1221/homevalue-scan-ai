@@ -99,7 +99,7 @@ export function renderValuationCard(data) {
   actions.style.flexWrap = 'wrap';
 
   const buttons = [
-    { label: 'View Comparables', value: 'view_comps' },
+    { label: 'View Comparables', value: 'view_comparables' },
     { label: 'View Recommendations', value: 'view_recommendations' },
     { label: 'Download PDF Report', value: 'download_pdf' }
   ];
@@ -160,10 +160,10 @@ export function renderComparablesCards(data) {
       <div class="rkt-Card__value" style="margin-bottom: 8px;">$${comp.price.toLocaleString()}</div>
       <div style="display: flex; gap: 16px; font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">
         <span>${comp.sqft.toLocaleString()} sq ft</span>
-        <span>${comp.beds} bd / ${comp.baths} ba</span>
+        <span>${comp.bedrooms || comp.beds} bd / ${comp.bathrooms || comp.baths} ba</span>
       </div>
       <div style="font-size: 14px; color: var(--text-secondary);">
-        <span style="margin-right: 4px;">📍</span>${comp.distance}
+        <span style="margin-right: 4px;">📍</span>${comp.distance} mi
       </div>
     `;
 
@@ -189,43 +189,52 @@ export function renderComparablesCards(data) {
 
 // Render Recommendations Cards
 export function renderRecommendationsCards(summaryData, recommendations) {
-  const container = document.createElement('div');
-  container.className = 'rkt-Spacing--mb24';
+  console.log('DEBUG: renderRecommendationsCards called');
+  console.log('  summaryData:', summaryData);
+  console.log('  recommendations count:', recommendations?.length);
 
-  // Summary Card
-  const summaryCard = document.createElement('div');
-  summaryCard.className = 'rkt-Card rkt-Elevation-2 rkt-Spacing--mb16';
-  summaryCard.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-  summaryCard.style.color = 'white';
-  summaryCard.style.display = 'flex';
-  summaryCard.style.alignItems = 'center';
-  summaryCard.style.gap = '20px';
-  summaryCard.innerHTML = `
-    <div style="font-size: 48px;">📊</div>
-    <div>
-      <h3 style="margin: 0 0 8px 0; font-size: 24px;">We found ${summaryData.count} recommendations</h3>
-      <p style="font-size: 16px; opacity: 0.9; margin: 0;">
-        Potential value increase:
-        <strong>$${summaryData.valueIncrease.min.toLocaleString()} - $${summaryData.valueIncrease.max.toLocaleString()}</strong>
-      </p>
-    </div>
-  `;
-  container.appendChild(summaryCard);
+  try {
+    const container = document.createElement('div');
+    container.className = 'rkt-Spacing--mb24';
+
+    // Summary Card
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'rkt-Card rkt-Elevation-2 rkt-Spacing--mb16';
+    summaryCard.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    summaryCard.style.color = 'white';
+    summaryCard.style.display = 'flex';
+    summaryCard.style.alignItems = 'center';
+    summaryCard.style.gap = '20px';
+    summaryCard.innerHTML = `
+      <div style="font-size: 48px;">📊</div>
+      <div>
+        <h3 style="margin: 0 0 8px 0; font-size: 24px;">We found ${summaryData.count} recommendations</h3>
+        <p style="font-size: 16px; opacity: 0.9; margin: 0;">
+          Potential value increase:
+          <strong>$${summaryData.valueIncrease.min.toLocaleString()} - $${summaryData.valueIncrease.max.toLocaleString()}</strong>
+        </p>
+      </div>
+    `;
+    container.appendChild(summaryCard);
+    console.log('  ✅ Summary card created');
 
   // Recommendations Grid
   const grid = document.createElement('div');
   grid.style.display = 'grid';
   grid.style.gap = '16px';
 
+  console.log('  Creating recommendation cards...');
   recommendations.forEach((rec, index) => {
+    console.log(`  Processing rec #${index + 1}:`, rec.title);
     const card = document.createElement('div');
     card.className = 'rkt-Card rkt-Elevation-1';
     card.style.backgroundColor = 'white';
 
     // Impact score color
+    const impact = rec.impactScore || rec.impact || 0;
     let impactColor = '#4caf50'; // Green
-    if (rec.impact < 60) impactColor = '#f44336'; // Red
-    else if (rec.impact < 80) impactColor = '#ff9800'; // Orange
+    if (impact < 60) impactColor = '#f44336'; // Red
+    else if (impact < 80) impactColor = '#ff9800'; // Orange
 
     card.innerHTML = `
       <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
@@ -238,11 +247,11 @@ export function renderRecommendationsCards(summaryData, recommendations) {
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin-bottom: 16px; padding: 16px; background: var(--secondary-color); border-radius: 8px;">
         <div>
           <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Investment</div>
-          <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);">$${rec.investment.min.toLocaleString()} - $${rec.investment.max.toLocaleString()}</div>
+          <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);">$${(rec.investmentRange?.[0] || rec.investment?.min || 0).toLocaleString()} - $${(rec.investmentRange?.[1] || rec.investment?.max || 0).toLocaleString()}</div>
         </div>
         <div>
           <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Value Add</div>
-          <div style="font-size: 16px; font-weight: 600; color: #4caf50;">+$${rec.valueAdd.min.toLocaleString()} - $${rec.valueAdd.max.toLocaleString()}</div>
+          <div style="font-size: 16px; font-weight: 600; color: #4caf50;">+$${(rec.valueAdd?.[0] || rec.valueAdd?.min || 0).toLocaleString()} - $${(rec.valueAdd?.[1] || rec.valueAdd?.max || 0).toLocaleString()}</div>
         </div>
         <div>
           <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">ROI</div>
@@ -252,9 +261,9 @@ export function renderRecommendationsCards(summaryData, recommendations) {
       <div style="padding: 12px; border-radius: 8px; background: var(--secondary-color);">
         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Impact Score</div>
         <div style="width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-bottom: 8px;">
-          <div style="height: 100%; background: ${impactColor}; width: ${rec.impact}%; transition: width 0.3s ease;"></div>
+          <div style="height: 100%; background: ${impactColor}; width: ${impact}%; transition: width 0.3s ease;"></div>
         </div>
-        <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${rec.impact}/100</div>
+        <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${impact}/100</div>
       </div>
     `;
 
@@ -276,7 +285,14 @@ export function renderRecommendationsCards(summaryData, recommendations) {
   `;
   container.appendChild(disclaimer);
 
-  return container;
+    console.log('✅ Recommendations card container complete, returning...');
+    return container;
+  } catch (error) {
+    console.error('❌ ERROR in renderRecommendationsCards:', error);
+    console.error('  summaryData:', summaryData);
+    console.error('  recommendations:', recommendations);
+    return null;
+  }
 }
 
 // Render PDF download notification

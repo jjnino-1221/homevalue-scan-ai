@@ -8,7 +8,7 @@ test.describe('Mobile Valuation - Fully Chip-Based Flow', () => {
     await page.goto('http://localhost:8001/chat.html');
 
     // Wait for the app to initialize
-    await page.waitForSelector('.chat-container');
+    await page.waitForSelector('.messages-container');
   });
 
   test('Path A: Complete flow with improvements', async ({ page }) => {
@@ -18,17 +18,42 @@ test.describe('Mobile Valuation - Fully Chip-Based Flow', () => {
 
     // Step 2: Address - Select an address
     await page.click('text=123 Main Street, Detroit MI 48226');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
-    // Steps 3-8: Click "Correct" 6 times (Type, Year, Sqft, Beds, Baths, Garage)
-    for (let i = 0; i < 6; i++) {
-      await page.click('text=✓ Correct');
-      await page.waitForTimeout(1000);
-    }
+    // Step 3: Property Type
+    await page.waitForSelector('text=Property Type:');
+    await page.click('button:has-text("✓ Correct")');
+    await page.waitForTimeout(1500);
+
+    // Step 4: Year Built
+    await page.waitForSelector('text=Year Built:');
+    await page.click('button:has-text("✓ Correct")');
+    await page.waitForTimeout(1500);
+
+    // Step 5: Square Footage
+    await page.waitForSelector('text=Square Footage:');
+    await page.click('button:has-text("✓ Correct")');
+    await page.waitForTimeout(1500);
+
+    // Step 6: Bedrooms
+    await page.waitForSelector('text=Bedrooms:');
+    await page.click('button:has-text("✓ Correct")');
+    await page.waitForTimeout(1500);
+
+    // Step 7: Bathrooms
+    await page.waitForSelector('text=Bathrooms:');
+    await page.click('button:has-text("✓ Correct")');
+    await page.waitForTimeout(1500);
+
+    // Step 8: Garage
+    await page.waitForSelector('text=Garage:');
+    await page.click('button:has-text("✓ Correct")');
+    await page.waitForTimeout(1500);
 
     // Step 9: HVAC age
+    await page.waitForSelector('text=HVAC System Age:');
     await page.click('text=6-10 years');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
     // Step 10: Roof age
     await page.click('text=6-10 years');

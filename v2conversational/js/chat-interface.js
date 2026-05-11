@@ -139,11 +139,19 @@ export function appendToCurrentMessage(text) {
 
 // Append interactive UI pattern to current message
 export function appendInteractiveUI(pattern) {
+  console.log('DEBUG: appendInteractiveUI called');
+  console.log('  currentMessageElement exists:', !!currentMessageElement);
+  console.log('  pattern type:', pattern?.type);
+  console.log('  pattern options count:', pattern?.options?.length);
+
   ensureInitialized();
   if (!currentMessageElement) {
-    console.warn('No current message to append interactive UI to');
+    console.warn('❌ ERROR: No current message to append interactive UI to');
+    console.warn('  This means currentMessageElement is null when it should not be');
     return;
   }
+
+  console.log('✅ currentMessageElement is valid, creating interactive UI...');
 
   // Create container for interactive elements
   const interactiveContainer = document.createElement('div');
@@ -155,11 +163,18 @@ export function appendInteractiveUI(pattern) {
     handleInteractiveSelection(value, label || value);
   });
 
+  console.log('  uiElement rendered:', !!uiElement);
+
   if (uiElement) {
+    console.log('  Appending uiElement to interactive container...');
     interactiveContainer.appendChild(uiElement);
+    console.log('  Appending interactive container to currentMessageElement...');
     currentMessageElement.appendChild(interactiveContainer);
     currentInteractiveContainer = interactiveContainer;
+    console.log('✅ Interactive UI successfully appended!');
     scrollToBottom();
+  } else {
+    console.warn('❌ ERROR: renderUIPattern returned null/undefined');
   }
 }
 

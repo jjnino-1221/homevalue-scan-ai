@@ -9,6 +9,38 @@ import { VoiceHandler } from './voice-handler.js';
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('🚀 Rocket Valuation V2 - Initializing...');
 
+  // WAIT for AIOrchestrator to be available (ES6 modules load async)
+  console.log('⏳ Waiting for AIOrchestrator to load...');
+  let attempts = 0;
+  while (!window.AIOrchestrator && attempts < 50) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
+
+  if (!window.AIOrchestrator) {
+    console.error('❌ AIOrchestrator failed to load after 5 seconds');
+    alert('Application failed to initialize. Please refresh the page.');
+    return;
+  }
+
+  console.log('✅ AIOrchestrator loaded successfully');
+
+  // WAIT for ChatInterface to be available
+  console.log('⏳ Waiting for ChatInterface to load...');
+  attempts = 0;
+  while (!window.ChatInterface && attempts < 50) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
+
+  if (!window.ChatInterface) {
+    console.error('❌ ChatInterface failed to load after 5 seconds');
+    alert('Application failed to initialize. Please refresh the page.');
+    return;
+  }
+
+  console.log('✅ ChatInterface loaded successfully');
+
   // Check for existing conversation to resume
   const recentConversation = window.AIOrchestrator.checkForResumeConversation();
 

@@ -1,0 +1,66 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: 🏠
+      - heading "Rocket Valuation" [level=1] [ref=e6]
+    - generic [ref=e7]:
+      - button "🎤" [ref=e8] [cursor=pointer]:
+        - generic [ref=e9]: 🎤
+      - button "👤" [ref=e10] [cursor=pointer]:
+        - generic [ref=e11]: 👤
+  - main [ref=e12]:
+    - generic [ref=e14]: Welcome to Rocket Valuation! I can help you get an accurate estimate of your property's value. Would you like to evaluate your property?
+    - generic [ref=e16]: ✓ Yes, evaluate my property
+    - generic [ref=e18]: Great! Which property would you like me to evaluate?
+    - generic [ref=e20]: 123 Main Street, Detroit MI 48226
+    - generic [ref=e22]:
+      - text: Thanks! I found some public records. Let me verify a few details with you.
+      - strong [ref=e23]: "Property Type:"
+      - text: Single Family
+      - text: Is this correct?
+    - generic [ref=e25]: ✓ Correct
+    - generic [ref=e27]:
+      - strong [ref=e28]: "Year Built:"
+      - text: "1950"
+      - text: Is this correct?
+    - generic [ref=e30]: ✓ Correct
+    - generic [ref=e32]:
+      - strong [ref=e33]: "Square Footage:"
+      - text: 1,800 sq ft
+      - text: Is this correct?
+    - generic [ref=e35]: ✓ Correct
+    - generic [ref=e37]:
+      - strong [ref=e38]: "Bedrooms:"
+      - text: 3 bedrooms
+      - text: Is this correct?
+    - generic [ref=e40]: ✓ Correct
+    - generic [ref=e42]:
+      - strong [ref=e43]: "Bathrooms:"
+      - text: 2.5 bathrooms
+      - text: Is this correct?
+    - generic [ref=e45]: ✓ Correct
+    - generic [ref=e47]:
+      - strong [ref=e48]: "Garage:"
+      - text: 2-car garage
+      - text: Is this correct?
+    - generic [ref=e50]: ✓ Correct
+    - generic [ref=e52]:
+      - text: How old is your
+      - strong [ref=e53]: HVAC system
+      - text: "?"
+      - generic [ref=e55]:
+        - button "0-5 years" [ref=e56] [cursor=pointer]
+        - button "6-10 years" [ref=e57] [cursor=pointer]
+        - button "11-15 years" [ref=e58] [cursor=pointer]
+        - button "15+ years" [ref=e59] [cursor=pointer]
+  - contentinfo [ref=e60]:
+    - generic [ref=e61]:
+      - textbox "Type your message..." [ref=e62]
+      - button "📷" [ref=e63] [cursor=pointer]:
+        - generic [ref=e64]: 📷
+      - button "📤" [ref=e65] [cursor=pointer]:
+        - generic [ref=e66]: 📤
+```

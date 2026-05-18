@@ -1,0 +1,392 @@
+[2026-04-02T14:29:09.545Z] [development] [INFO] Application starting {environment: development, debug: true, features: Object}
+Configuration loaded: {environment: development, debug: true, logging: Object, api: Object, claude: Object}
+Diagnostics initialized. Use checkHealth() or getDiagnostics() to inspect.
+[2026-04-02T14:29:09.548Z] [development] [INFO] Security utilities initialized 
+[2026-04-02T14:29:09.549Z] [development] [INFO] Error tracking disabled 
+ChatInterface initialized successfully
+CameraModal initialized
+Mock AIOrchestrator loaded
+✅ App initialized
+🚀 Rocket Valuation V2 - Initializing...
+⏳ Waiting for AIOrchestrator to load...
+✅ AIOrchestrator loaded successfully
+⏳ Waiting for ChatInterface to load...
+✅ ChatInterface loaded successfully
+Showing welcome message
+Mock conversation started
+Mock: User said: 
+[11ms] [lifecycle] Page loaded 
+Failed to load resource: the server responded with a status of 404 (File not found)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 0
+  lastValue: undefined
+  looking for step: 1
+DEBUG: Returning welcome step (step 1)
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 0 to 1
+Mock: User selected: yes_evaluate (display: ✓ Yes, evaluate my property)
+DEBUG: Setting lastValue to: yes_evaluate
+DEBUG: conversationState.lastValue is now: yes_evaluate
+Mock: User said: yes_evaluate
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 1
+  lastValue: yes_evaluate
+  looking for step: 2
+DEBUG: Checking step: 2
+  step.trigger: yes_evaluate
+  step.message preview: Great! Which property would you like me to evaluat...
+DEBUG: Step has single trigger: yes_evaluate
+  Comparing: yes_evaluate === yes_evaluate
+✅ DEBUG: Single trigger MATCHED! Returning step 2
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 3
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 1 to 2
+Mock: User selected: address_main_st (display: 123 Main Street, Detroit MI 48226)
+DEBUG: Setting lastValue to: address_main_st
+DEBUG: conversationState.lastValue is now: address_main_st
+Mock: User said: address_main_st
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 2
+  lastValue: address_main_st
+  looking for step: 3
+DEBUG: Checking step: 3
+  step.trigger: [address_main_st, address_oak_ave, address_maple_dr]
+  step.message preview: Thanks! I found some public records. Let me verify...
+DEBUG: Step has array trigger: [address_main_st, address_oak_ave, address_maple_dr]
+  Checking if array includes lastValue: address_main_st
+✅ DEBUG: Array trigger MATCHED! Returning step 3
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 2 to 3
+Mock: User selected: correct_type (display: ✓ Correct)
+DEBUG: Setting lastValue to: correct_type
+DEBUG: conversationState.lastValue is now: correct_type
+Mock: User said: correct_type
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 3
+  lastValue: correct_type
+  looking for step: 4
+DEBUG: Checking step: 4
+  step.trigger: correct_type
+  step.message preview: **Year Built:** 1950
+
+Is this correct?...
+DEBUG: Step has single trigger: correct_type
+  Comparing: correct_type === correct_type
+✅ DEBUG: Single trigger MATCHED! Returning step 4
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 3 to 4
+Mock: User selected: correct_year (display: ✓ Correct)
+DEBUG: Setting lastValue to: correct_year
+DEBUG: conversationState.lastValue is now: correct_year
+Mock: User said: correct_year
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 4
+  lastValue: correct_year
+  looking for step: 5
+DEBUG: Checking step: 5
+  step.trigger: correct_year
+  step.message preview: **Square Footage:** 1,800 sq ft
+
+Is this correct?...
+DEBUG: Step has single trigger: correct_year
+  Comparing: correct_year === correct_year
+✅ DEBUG: Single trigger MATCHED! Returning step 5
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 4 to 5
+Mock: User selected: correct_sqft (display: ✓ Correct)
+DEBUG: Setting lastValue to: correct_sqft
+DEBUG: conversationState.lastValue is now: correct_sqft
+Mock: User said: correct_sqft
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 5
+  lastValue: correct_sqft
+  looking for step: 6
+DEBUG: Checking step: 6
+  step.trigger: correct_sqft
+  step.message preview: **Bedrooms:** 3 bedrooms
+
+Is this correct?...
+DEBUG: Step has single trigger: correct_sqft
+  Comparing: correct_sqft === correct_sqft
+✅ DEBUG: Single trigger MATCHED! Returning step 6
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 5 to 6
+Mock: User selected: correct_beds (display: ✓ Correct)
+DEBUG: Setting lastValue to: correct_beds
+DEBUG: conversationState.lastValue is now: correct_beds
+Mock: User said: correct_beds
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 6
+  lastValue: correct_beds
+  looking for step: 7
+DEBUG: Checking step: 7
+  step.trigger: correct_beds
+  step.message preview: **Bathrooms:** 2.5 bathrooms
+
+Is this correct?...
+DEBUG: Step has single trigger: correct_beds
+  Comparing: correct_beds === correct_beds
+✅ DEBUG: Single trigger MATCHED! Returning step 7
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 6 to 7
+Mock: User selected: correct_baths (display: ✓ Correct)
+DEBUG: Setting lastValue to: correct_baths
+DEBUG: conversationState.lastValue is now: correct_baths
+Mock: User said: correct_baths
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 7
+  lastValue: correct_baths
+  looking for step: 8
+DEBUG: Checking step: 8
+  step.trigger: correct_baths
+  step.message preview: **Garage:** 2-car garage
+
+Is this correct?...
+DEBUG: Step has single trigger: correct_baths
+  Comparing: correct_baths === correct_baths
+✅ DEBUG: Single trigger MATCHED! Returning step 8
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 7 to 8
+Mock: User selected: correct_garage (display: ✓ Correct)
+DEBUG: Setting lastValue to: correct_garage
+DEBUG: conversationState.lastValue is now: correct_garage
+Mock: User said: correct_garage
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 8
+  lastValue: correct_garage
+  looking for step: 9
+DEBUG: Checking step: 9
+  step.trigger: correct_garage
+  step.message preview: How old is your **HVAC system**?...
+DEBUG: Step has single trigger: correct_garage
+  Comparing: correct_garage === correct_garage
+✅ DEBUG: Single trigger MATCHED! Returning step 9
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 4
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 8 to 9
+Mock: User selected: hvac_6_10 (display: 6-10 years)
+DEBUG: Setting lastValue to: hvac_6_10
+DEBUG: conversationState.lastValue is now: hvac_6_10
+Mock: User said: hvac_6_10
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 9
+  lastValue: hvac_6_10
+  looking for step: 10
+DEBUG: Checking step: 10
+  step.trigger: [hvac_0_5, hvac_6_10, hvac_11_15, hvac_15_plus]
+  step.message preview: How old is your **roof**?...
+DEBUG: Step has array trigger: [hvac_0_5, hvac_6_10, hvac_11_15, hvac_15_plus]
+  Checking if array includes lastValue: hvac_6_10
+✅ DEBUG: Array trigger MATCHED! Returning step 10
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 4
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 9 to 10
+Mock: User selected: roof_6_10 (display: 6-10 years)
+DEBUG: Setting lastValue to: roof_6_10
+DEBUG: conversationState.lastValue is now: roof_6_10
+Mock: User said: roof_6_10
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 10
+  lastValue: roof_6_10
+  looking for step: 11
+DEBUG: Checking step: 11
+  step.trigger: [roof_0_5, roof_6_10, roof_11_15, roof_15_plus]
+  step.message preview: What's the condition of your **kitchen**?...
+DEBUG: Step has array trigger: [roof_0_5, roof_6_10, roof_11_15, roof_15_plus]
+  Checking if array includes lastValue: roof_6_10
+✅ DEBUG: Array trigger MATCHED! Returning step 11
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 3
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 10 to 11
+Mock: User selected: kitchen_renovated (display: Fully Renovated)
+DEBUG: Setting lastValue to: kitchen_renovated
+DEBUG: conversationState.lastValue is now: kitchen_renovated
+Mock: User said: kitchen_renovated
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 11
+  lastValue: kitchen_renovated
+  looking for step: 12
+DEBUG: Checking step: 12
+  step.trigger: [kitchen_original, kitchen_partial, kitchen_renovated]
+  step.message preview: Have you made any **recent improvements**? (Select...
+DEBUG: Step has array trigger: [kitchen_original, kitchen_partial, kitchen_renovated]
+  Checking if array includes lastValue: kitchen_renovated
+✅ DEBUG: Array trigger MATCHED! Returning step 12
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 6
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 11 to 12
+DEBUG: "None" clicked in multi-select, acting as single-select
+Mock: User selected: imp_none (display: None)
+DEBUG: Setting lastValue to: imp_none
+DEBUG: conversationState.lastValue is now: imp_none
+Mock: User said: imp_none
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 12
+  lastValue: imp_none
+  looking for step: 13
+DEBUG: Checking step: 13
+  step.trigger: [imp_kitchen, imp_bathroom, imp_roof, imp_hvac, imp_windows]
+  step.message preview: Great! Can you tell me more about these improvemen...
+DEBUG: Step has "contains" trigger type
+  Checking if lastValue contains any of: [imp_kitchen, imp_bathroom, imp_roof, imp_hvac, imp_windows]
+❌ DEBUG: Contains trigger did NOT match, continuing search...
+DEBUG: Checking step: 14
+  step.trigger: [desc_high_end, desc_updated, desc_recent, desc_professional, imp_none]
+  step.message preview: Would you like to take **photos** of your property...
+DEBUG: Step has array trigger: [desc_high_end, desc_updated, desc_recent, desc_professional, imp_none]
+  Checking if array includes lastValue: imp_none
+✅ DEBUG: Array trigger MATCHED! Returning step 14
+DEBUG: appendInteractiveUI called
+  currentMessageElement exists: true
+  pattern type: chips
+  pattern options count: 2
+✅ currentMessageElement is valid, creating interactive UI...
+  uiElement rendered: true
+  Appending uiElement to interactive container...
+  Appending interactive container to currentMessageElement...
+✅ Interactive UI successfully appended!
+DEBUG: Step counter advanced from 12 to 13
+Mock: User selected: photos_no (display: Skip photos)
+DEBUG: Setting lastValue to: photos_no
+DEBUG: conversationState.lastValue is now: photos_no
+Mock: User said: photos_no
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 13
+  lastValue: photos_no
+  looking for step: 14
+DEBUG: Checking step: 14
+  step.trigger: [desc_high_end, desc_updated, desc_recent, desc_professional, imp_none]
+  step.message preview: Would you like to take **photos** of your property...
+DEBUG: Step has array trigger: [desc_high_end, desc_updated, desc_recent, desc_professional, imp_none]
+  Checking if array includes lastValue: photos_no
+❌ DEBUG: Array trigger did NOT match, continuing search...
+DEBUG: Checking step: 15
+  step.trigger: [photos_yes, photos_no]
+  step.message preview: Perfect! Let me calculate your property's estimate...
+DEBUG: Step has array trigger: [photos_yes, photos_no]
+  Checking if array includes lastValue: photos_no
+✅ DEBUG: Array trigger MATCHED! Returning step 15
+DEBUG: Auto-advance enabled, will continue in 1.5 seconds...
+DEBUG: Step counter advanced from 13 to 14
+DEBUG: Auto-advance triggered, sending empty message to continue
+Mock: User said: 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEBUG: getNextStep called
+  currentStep: 14
+  lastValue: photos_no
+  looking for step: 15
+DEBUG: Checking step: 15
+  step.trigger: [photos_yes, photos_no]
+  step.message preview: Perfect! Let me calculate your property's estimate...
+DEBUG: Step has array trigger: [photos_yes, photos_no]
+  Checking if array includes lastValue: photos_no
+✅ DEBUG: Array trigger MATCHED! Returning step 15
+DEBUG: Auto-advance enabled, will continue in 1.5 seconds...
+DEBUG: Step counter advanced from 14 to 15
+DEBUG: Auto-advance triggered, sending empty message to continue
+Mock: User said: 

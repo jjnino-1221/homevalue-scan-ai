@@ -1,0 +1,99 @@
+# Mobile Valuation — Project One-Pager
+
+## The Opportunity
+
+Traditional home appraisals take **7–10 business days** and cost **$400–600 per order**. That timeline creates friction at every point in the mortgage process — it delays closings, frustrates borrowers, and is the single most variable cost in the origination workflow.
+
+Mobile devices now have the hardware to change this. Modern smartphones carry LiDAR sensors, high-resolution cameras, and enough local compute to run real-time image analysis. The question isn't whether mobile valuation is technically possible — it's whether a product experience exists that homeowners will actually complete.
+
+This project answers that question.
+
+---
+
+## What Was Built
+
+**Rocket Valuation** is a mobile-first proof-of-concept that guides a homeowner through a complete property valuation in under 15 minutes — entirely from their phone.
+
+### The Flow (8 Screens, End-to-End)
+
+1. **Landing** — Value prop and single CTA: *"Know Your Home's Value in 15 Minutes"*
+2. **Address Entry** — GPS-based property lookup (mock for demo; production-ready architecture)
+3. **Property Verification** — TurboTax-style wizard: *"Public records say..."* — user confirms or corrects 4 screens of pre-filled data (type, size, rooms, condition, recent changes)
+4. **Photo Instructions** — Guided room-by-room capture list (5 rooms)
+5. **Camera Capture** — Live viewfinder with real-time AI quality feedback (lighting, sharpness) + mock LiDAR scanning with realistic room dimensions
+6. **Photo Review** — Full grid with dimensions; retake before submitting
+7. **Results** — Estimated value range, confidence score, room breakdown, 3 comparable sales
+8. **Recommendations** — AI-scored improvement analysis across 6 areas (HVAC, roof, kitchen, bathroom, exterior, energy) with cost estimates and ROI projections
+
+### Two Versions Available
+
+| | V1 — Wizard Flow | V2 — Conversational |
+|---|---|---|
+| UX Pattern | Step-by-step screens | Chat interface |
+| Camera | Live + LiDAR mock | UI only |
+| Flow Time | ~5 min | ~3 min |
+| Framing | Mobile app prototype | AI product concept |
+| Design System | Custom responsive CSS | 100% Nova RDS compliant |
+
+---
+
+## The Value Proposition
+
+| Dimension | Traditional Appraisal | Mobile Valuation |
+|---|---|---|
+| **Time to Value** | 7–10 business days | Same day |
+| **Cost per Order** | $400–600 | $100–200 (estimated) |
+| **Data Capture** | In-person inspector | Homeowner via smartphone |
+| **Borrower Experience** | Black box | Transparent, interactive |
+| **Scalability** | Constrained by appraiser supply | On-demand |
+
+**Strategic fit:** Reduces cost-to-produce, eliminates appraisal-driven delay from the closing timeline, and creates a direct-to-borrower touchpoint that positions Rocket as a trusted home advisor — not just a lender.
+
+---
+
+## What's Real vs. Mocked (PoC Scope)
+
+### Real (running in the browser today)
+- TensorFlow.js + MobileNet — live image quality analysis (lighting, sharpness detection)
+- MediaDevices API — full camera access with fallback to file upload
+- Canvas API — photo capture and compression
+- Multi-factor recommendation scoring engine
+
+### Mocked (production integration path exists)
+- LiDAR scanning — simulated with realistic dimensions; architecture ready for real depth data on supported hardware
+- Valuation engine — mock AVM using state-level price/sqft; production path: integrate Freddie/Fannie AVM or third-party (e.g., Veros, Clear Capital)
+- Comparable properties — generated from mock MLS; production path: live MLS feed
+- Address lookup — hardcoded Detroit address for demo reliability; production path: Google Places API (already integrated, deferred)
+
+---
+
+## Current Status
+
+**Phase 6 of 6 complete.** Full PoC is demo-ready and deployable to a live URL in under 5 minutes via Netlify.
+
+The prototype runs entirely client-side — no backend required for the demo. No data leaves the device.
+
+**Audience:** Built for a leadership walkthrough with Khurram Iftikhar (VP Product) by December 2026. PoC is complete ahead of schedule.
+
+---
+
+## Open Questions for Leadership
+
+1. **Who is the primary user?** Consumer-facing (homeowners), internal tool (appraisers), or a hybrid?
+2. **Where does this fit in the workflow?** Pre-qualification, refi trigger, or full appraisal replacement (waiver-eligible loans)?
+3. **Build vs. buy vs. partner?** AVM providers (Veros, Clear Capital, CoreLogic) already exist — does Rocket want to own the valuation layer or orchestrate it?
+4. **Pilot scope?** What loan type and volume threshold defines a meaningful test?
+
+---
+
+## Next Steps (If We Proceed)
+
+1. Live demo walkthrough with product leadership
+2. Decision on target use case (consumer / internal / hybrid)
+3. AVM vendor evaluation for real valuation data
+4. LiDAR integration scoping (iPhone Pro / iPad Pro hardware)
+5. LOS integration design (passing valuation output back into origination workflow)
+
+---
+
+Generated by Rocket Flow · 2.0.0 · 2026-05-18
